@@ -30,7 +30,9 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 RUN mkdir -p storage/framework/{sessions,views,cache} \
     && mkdir -p storage/logs \
     && mkdir -p bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+    && mkdir -p database \
+    && touch database/database.sqlite \
+    && chmod -R 775 storage bootstrap/cache database
 
 # Cache configuration
 RUN php artisan config:cache \
