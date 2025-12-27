@@ -1,0 +1,996 @@
+{
+    "countries": [
+        {
+            "name": "Afghanistan",
+            "code": "AF",
+            "cities": [
+                "Kabul",
+                "Kandahar",
+                "Herat",
+                "Mazar-i-Sharif",
+                "Jalalabad"
+            ]
+        },
+        {
+            "name": "Albania",
+            "code": "AL",
+            "cities": [
+                "Tirana",
+                "Durrës",
+                "Vlorë",
+                "Shkodër",
+                "Korçë"
+            ]
+        },
+        {
+            "name": "Algeria",
+            "code": "DZ",
+            "cities": [
+                "Algiers",
+                "Oran",
+                "Constantine",
+                "Batna",
+                "Djelfa"
+            ]
+        },
+        {
+            "name": "Argentina",
+            "code": "AR",
+            "cities": [
+                "Buenos Aires",
+                "Córdoba",
+                "Rosario",
+                "Mendoza",
+                "La Plata",
+                "Mar del Plata"
+            ]
+        },
+        {
+            "name": "Australia",
+            "code": "AU",
+            "cities": [
+                "Sydney",
+                "Melbourne",
+                "Brisbane",
+                "Perth",
+                "Adelaide",
+                "Gold Coast",
+                "Canberra"
+            ]
+        },
+        {
+            "name": "Austria",
+            "code": "AT",
+            "cities": [
+                "Vienna",
+                "Graz",
+                "Linz",
+                "Salzburg",
+                "Innsbruck"
+            ]
+        },
+        {
+            "name": "Bangladesh",
+            "code": "BD",
+            "cities": [
+                "Dhaka",
+                "Chittagong",
+                "Khulna",
+                "Rajshahi",
+                "Sylhet",
+                "Barisal"
+            ]
+        },
+        {
+            "name": "Belgium",
+            "code": "BE",
+            "cities": [
+                "Brussels",
+                "Antwerp",
+                "Ghent",
+                "Charleroi",
+                "Liège",
+                "Bruges"
+            ]
+        },
+        {
+            "name": "Brazil",
+            "code": "BR",
+            "cities": [
+                "São Paulo",
+                "Rio de Janeiro",
+                "Brasília",
+                "Salvador",
+                "Fortaleza",
+                "Belo Horizonte",
+                "Manaus",
+                "Curitiba",
+                "Recife"
+            ]
+        },
+        {
+            "name": "Canada",
+            "code": "CA",
+            "cities": [
+                "Toronto",
+                "Montreal",
+                "Vancouver",
+                "Calgary",
+                "Edmonton",
+                "Ottawa",
+                "Winnipeg",
+                "Quebec City"
+            ]
+        },
+        {
+            "name": "Chile",
+            "code": "CL",
+            "cities": [
+                "Santiago",
+                "Valparaíso",
+                "Concepción",
+                "La Serena",
+                "Antofagasta"
+            ]
+        },
+        {
+            "name": "China",
+            "code": "CN",
+            "cities": [
+                "Beijing",
+                "Shanghai",
+                "Guangzhou",
+                "Shenzhen",
+                "Chengdu",
+                "Hangzhou",
+                "Wuhan",
+                "Xi'an",
+                "Chongqing",
+                "Tianjin",
+                "Nanjing",
+                "Suzhou"
+            ]
+        },
+        {
+            "name": "Colombia",
+            "code": "CO",
+            "cities": [
+                "Bogotá",
+                "Medellín",
+                "Cali",
+                "Barranquilla",
+                "Cartagena"
+            ]
+        },
+        {
+            "name": "Czech Republic",
+            "code": "CZ",
+            "cities": [
+                "Prague",
+                "Brno",
+                "Ostrava",
+                "Plzeň",
+                "Liberec"
+            ]
+        },
+        {
+            "name": "Denmark",
+            "code": "DK",
+            "cities": [
+                "Copenhagen",
+                "Aarhus",
+                "Odense",
+                "Aalborg",
+                "Esbjerg"
+            ]
+        },
+        {
+            "name": "Egypt",
+            "code": "EG",
+            "cities": [
+                "Cairo",
+                "Alexandria",
+                "Giza",
+                "Shubra El-Kheima",
+                "Port Said",
+                "Suez",
+                "Luxor"
+            ]
+        },
+        {
+            "name": "Finland",
+            "code": "FI",
+            "cities": [
+                "Helsinki",
+                "Espoo",
+                "Tampere",
+                "Vantaa",
+                "Oulu"
+            ]
+        },
+        {
+            "name": "France",
+            "code": "FR",
+            "cities": [
+                "Paris",
+                "Marseille",
+                "Lyon",
+                "Toulouse",
+                "Nice",
+                "Nantes",
+                "Strasbourg",
+                "Montpellier",
+                "Bordeaux"
+            ]
+        },
+        {
+            "name": "Germany",
+            "code": "DE",
+            "cities": [
+                "Berlin",
+                "Hamburg",
+                "Munich",
+                "Cologne",
+                "Frankfurt",
+                "Stuttgart",
+                "Düsseldorf",
+                "Dortmund",
+                "Essen",
+                "Leipzig",
+                "Bremen",
+                "Dresden",
+                "Hanover",
+                "Nuremberg"
+            ]
+        },
+        {
+            "name": "Greece",
+            "code": "GR",
+            "cities": [
+                "Athens",
+                "Thessaloniki",
+                "Patras",
+                "Heraklion",
+                "Larissa"
+            ]
+        },
+        {
+            "name": "Hong Kong",
+            "code": "HK",
+            "cities": [
+                "Hong Kong",
+                "Kowloon",
+                "Tsuen Wan",
+                "Yuen Long",
+                "Tuen Mun"
+            ]
+        },
+        {
+            "name": "Hungary",
+            "code": "HU",
+            "cities": [
+                "Budapest",
+                "Debrecen",
+                "Szeged",
+                "Miskolc",
+                "Pécs"
+            ]
+        },
+        {
+            "name": "India",
+            "code": "IN",
+            "cities": [
+                "Mumbai",
+                "New Delhi",
+                "Bangalore",
+                "Hyderabad",
+                "Ahmedabad",
+                "Chennai",
+                "Kolkata",
+                "Pune",
+                "Jaipur",
+                "Surat",
+                "Lucknow",
+                "Kanpur",
+                "Nagpur",
+                "Indore",
+                "Thane",
+                "Bhopal",
+                "Visakhapatnam",
+                "Patna",
+                "Vadodara",
+                "Ghaziabad",
+                "Ludhiana",
+                "Agra",
+                "Nashik",
+                "Faridabad",
+                "Meerut",
+                "Rajkot",
+                "Varanasi",
+                "Srinagar",
+                "Aurangabad",
+                "Dhanbad",
+                "Amritsar",
+                "Navi Mumbai",
+                "Allahabad",
+                "Ranchi",
+                "Howrah",
+                "Coimbatore",
+                "Jabalpur",
+                "Gwalior",
+                "Vijayawada",
+                "Jodhpur",
+                "Madurai",
+                "Raipur",
+                "Kota",
+                "Guwahati",
+                "Chandigarh",
+                "Solapur",
+                "Hubli–Dharwad",
+                "Mysore",
+                "Tiruchirappalli",
+                "Bareilly",
+                "Aligarh",
+                "Tiruppur",
+                "Moradabad",
+                "Jalandhar",
+                "Bhubaneswar",
+                "Salem",
+                "Warangal",
+                "Mira-Bhayandar",
+                "Thiruvananthapuram",
+                "Bhiwandi",
+                "Saharanpur",
+                "Guntur",
+                "Amravati",
+                "Bikaner",
+                "Noida",
+                "Jamshedpur",
+                "Bhilai Nagar",
+                "Cuttack",
+                "Firozabad",
+                "Kochi",
+                "Bhavnagar",
+                "Dehradun",
+                "Durgapur",
+                "Asansol",
+                "Nanded",
+                "Kolhapur",
+                "Ajmer",
+                "Gulbarga",
+                "Jamnagar",
+                "Ujjain",
+                "Loni",
+                "Siliguri",
+                "Jhansi",
+                "Ulhasnagar",
+                "Nellore",
+                "Jammu",
+                "Sangli-Miraj & Kupwad",
+                "Mangalore",
+                "Erode",
+                "Belgaum",
+                "Ambattur",
+                "Tirunelveli",
+                "Malegaon",
+                "Gaya",
+                "Udaipur",
+                "Maheshtala"
+            ]
+        },
+        {
+            "name": "Indonesia",
+            "code": "ID",
+            "cities": [
+                "Jakarta",
+                "Surabaya",
+                "Bandung",
+                "Medan",
+                "Semarang",
+                "Makassar",
+                "Palembang",
+                "Tangerang",
+                "Depok",
+                "Bekasi"
+            ]
+        },
+        {
+            "name": "Iran",
+            "code": "IR",
+            "cities": [
+                "Tehran",
+                "Mashhad",
+                "Isfahan",
+                "Karaj",
+                "Shiraz",
+                "Tabriz"
+            ]
+        },
+        {
+            "name": "Iraq",
+            "code": "IQ",
+            "cities": [
+                "Baghdad",
+                "Basra",
+                "Mosul",
+                "Erbil",
+                "Kirkuk",
+                "Najaf"
+            ]
+        },
+        {
+            "name": "Ireland",
+            "code": "IE",
+            "cities": [
+                "Dublin",
+                "Cork",
+                "Limerick",
+                "Galway",
+                "Waterford"
+            ]
+        },
+        {
+            "name": "Israel",
+            "code": "IL",
+            "cities": [
+                "Jerusalem",
+                "Tel Aviv",
+                "Haifa",
+                "Rishon LeZion",
+                "Petah Tikva",
+                "Ashdod"
+            ]
+        },
+        {
+            "name": "Italy",
+            "code": "IT",
+            "cities": [
+                "Rome",
+                "Milan",
+                "Naples",
+                "Turin",
+                "Palermo",
+                "Genoa",
+                "Bologna",
+                "Florence",
+                "Bari",
+                "Catania",
+                "Venice",
+                "Verona"
+            ]
+        },
+        {
+            "name": "Japan",
+            "code": "JP",
+            "cities": [
+                "Tokyo",
+                "Yokohama",
+                "Osaka",
+                "Nagoya",
+                "Sapporo",
+                "Fukuoka",
+                "Kobe",
+                "Kyoto",
+                "Kawasaki",
+                "Saitama",
+                "Hiroshima",
+                "Sendai"
+            ]
+        },
+        {
+            "name": "Jordan",
+            "code": "JO",
+            "cities": [
+                "Amman",
+                "Zarqa",
+                "Irbid",
+                "Russeifa",
+                "Aqaba"
+            ]
+        },
+        {
+            "name": "Kenya",
+            "code": "KE",
+            "cities": [
+                "Nairobi",
+                "Mombasa",
+                "Kisumu",
+                "Nakuru",
+                "Eldoret"
+            ]
+        },
+        {
+            "name": "South Korea",
+            "code": "KR",
+            "cities": [
+                "Seoul",
+                "Busan",
+                "Incheon",
+                "Daegu",
+                "Daejeon",
+                "Gwangju",
+                "Ulsan",
+                "Suwon"
+            ]
+        },
+        {
+            "name": "Kuwait",
+            "code": "KW",
+            "cities": [
+                "Kuwait City",
+                "Al Ahmadi",
+                "Hawalli",
+                "Farwaniya",
+                "Salmiya"
+            ]
+        },
+        {
+            "name": "Malaysia",
+            "code": "MY",
+            "cities": [
+                "Kuala Lumpur",
+                "George Town",
+                "Ipoh",
+                "Johor Bahru",
+                "Malacca City",
+                "Kota Kinabalu",
+                "Kuching"
+            ]
+        },
+        {
+            "name": "Mexico",
+            "code": "MX",
+            "cities": [
+                "Mexico City",
+                "Guadalajara",
+                "Monterrey",
+                "Puebla",
+                "Tijuana",
+                "León",
+                "Juárez",
+                "Zapopan",
+                "Mérida",
+                "Cancún"
+            ]
+        },
+        {
+            "name": "Morocco",
+            "code": "MA",
+            "cities": [
+                "Casablanca",
+                "Rabat",
+                "Fès",
+                "Marrakesh",
+                "Agadir",
+                "Tangier"
+            ]
+        },
+        {
+            "name": "Netherlands",
+            "code": "NL",
+            "cities": [
+                "Amsterdam",
+                "Rotterdam",
+                "The Hague",
+                "Utrecht",
+                "Eindhoven",
+                "Tilburg",
+                "Groningen"
+            ]
+        },
+        {
+            "name": "New Zealand",
+            "code": "NZ",
+            "cities": [
+                "Auckland",
+                "Wellington",
+                "Christchurch",
+                "Hamilton",
+                "Tauranga",
+                "Dunedin"
+            ]
+        },
+        {
+            "name": "Nigeria",
+            "code": "NG",
+            "cities": [
+                "Lagos",
+                "Kano",
+                "Ibadan",
+                "Abuja",
+                "Port Harcourt",
+                "Benin City"
+            ]
+        },
+        {
+            "name": "Norway",
+            "code": "NO",
+            "cities": [
+                "Oslo",
+                "Bergen",
+                "Stavanger",
+                "Trondheim",
+                "Drammen"
+            ]
+        },
+        {
+            "name": "Pakistan",
+            "code": "PK",
+            "cities": [
+                "Karachi",
+                "Lahore",
+                "Faisalabad",
+                "Rawalpindi",
+                "Multan",
+                "Gujranwala",
+                "Hyderabad",
+                "Peshawar",
+                "Islamabad",
+                "Quetta"
+            ]
+        },
+        {
+            "name": "Peru",
+            "code": "PE",
+            "cities": [
+                "Lima",
+                "Arequipa",
+                "Trujillo",
+                "Chiclayo",
+                "Piura",
+                "Cusco"
+            ]
+        },
+        {
+            "name": "Philippines",
+            "code": "PH",
+            "cities": [
+                "Manila",
+                "Quezon City",
+                "Davao City",
+                "Makati",
+                "Pasig",
+                "Cebu City",
+                "Taguig",
+                "Pasay",
+                "Zamboanga City"
+            ]
+        },
+        {
+            "name": "Poland",
+            "code": "PL",
+            "cities": [
+                "Warsaw",
+                "Kraków",
+                "Łódź",
+                "Wrocław",
+                "Poznań",
+                "Gdańsk",
+                "Szczecin",
+                "Bydgoszcz",
+                "Lublin"
+            ]
+        },
+        {
+            "name": "Portugal",
+            "code": "PT",
+            "cities": [
+                "Lisbon",
+                "Porto",
+                "Vila Nova de Gaia",
+                "Amadora",
+                "Braga",
+                "Funchal",
+                "Coimbra"
+            ]
+        },
+        {
+            "name": "Qatar",
+            "code": "QA",
+            "cities": [
+                "Doha",
+                "Al Rayyan",
+                "Umm Salal Mohammed",
+                "Al Wakrah",
+                "Al Khor"
+            ]
+        },
+        {
+            "name": "Romania",
+            "code": "RO",
+            "cities": [
+                "Bucharest",
+                "Cluj-Napoca",
+                "Timișoara",
+                "Iași",
+                "Constanța",
+                "Craiova",
+                "Brașov"
+            ]
+        },
+        {
+            "name": "Russia",
+            "code": "RU",
+            "cities": [
+                "Moscow",
+                "Saint Petersburg",
+                "Novosibirsk",
+                "Yekaterinburg",
+                "Nizhny Novgorod",
+                "Kazan",
+                "Chelyabinsk",
+                "Omsk",
+                "Samara",
+                "Rostov-on-Don",
+                "Ufa",
+                "Krasnoyarsk",
+                "Perm",
+                "Voronezh",
+                "Volgograd"
+            ]
+        },
+        {
+            "name": "Saudi Arabia",
+            "code": "SA",
+            "cities": [
+                "Riyadh",
+                "Jeddah",
+                "Mecca",
+                "Medina",
+                "Dammam",
+                "Khobar",
+                "Tabuk",
+                "Buraidah"
+            ]
+        },
+        {
+            "name": "Singapore",
+            "code": "SG",
+            "cities": [
+                "Singapore"
+            ]
+        },
+        {
+            "name": "South Africa",
+            "code": "ZA",
+            "cities": [
+                "Johannesburg",
+                "Cape Town",
+                "Durban",
+                "Pretoria",
+                "Port Elizabeth",
+                "Bloemfontein"
+            ]
+        },
+        {
+            "name": "Spain",
+            "code": "ES",
+            "cities": [
+                "Madrid",
+                "Barcelona",
+                "Valencia",
+                "Seville",
+                "Zaragoza",
+                "Málaga",
+                "Murcia",
+                "Palma",
+                "Las Palmas",
+                "Bilbao",
+                "Alicante",
+                "Granada"
+            ]
+        },
+        {
+            "name": "Sri Lanka",
+            "code": "LK",
+            "cities": [
+                "Colombo",
+                "Kandy",
+                "Galle",
+                "Jaffna",
+                "Negombo"
+            ]
+        },
+        {
+            "name": "Sweden",
+            "code": "SE",
+            "cities": [
+                "Stockholm",
+                "Gothenburg",
+                "Malmö",
+                "Uppsala",
+                "Västerås",
+                "Örebro"
+            ]
+        },
+        {
+            "name": "Switzerland",
+            "code": "CH",
+            "cities": [
+                "Zurich",
+                "Geneva",
+                "Basel",
+                "Lausanne",
+                "Bern",
+                "Winterthur",
+                "Lucerne"
+            ]
+        },
+        {
+            "name": "Taiwan",
+            "code": "TW",
+            "cities": [
+                "Taipei",
+                "Kaohsiung",
+                "Taichung",
+                "Tainan",
+                "Hsinchu"
+            ]
+        },
+        {
+            "name": "Thailand",
+            "code": "TH",
+            "cities": [
+                "Bangkok",
+                "Nonthaburi",
+                "Pak Kret",
+                "Hat Yai",
+                "Chiang Mai",
+                "Phuket City",
+                "Pattaya"
+            ]
+        },
+        {
+            "name": "Turkey",
+            "code": "TR",
+            "cities": [
+                "Istanbul",
+                "Ankara",
+                "Izmir",
+                "Bursa",
+                "Adana",
+                "Gaziantep",
+                "Konya",
+                "Antalya",
+                "Diyarbakır"
+            ]
+        },
+        {
+            "name": "Ukraine",
+            "code": "UA",
+            "cities": [
+                "Kyiv",
+                "Kharkiv",
+                "Odessa",
+                "Dnipro",
+                "Donetsk",
+                "Zaporizhzhia",
+                "Lviv"
+            ]
+        },
+        {
+            "name": "United Arab Emirates",
+            "code": "AE",
+            "cities": [
+                "Dubai",
+                "Abu Dhabi",
+                "Sharjah",
+                "Al Ain",
+                "Ajman",
+                "Ras Al Khaimah",
+                "Fujairah"
+            ]
+        },
+        {
+            "name": "United Kingdom",
+            "code": "GB",
+            "cities": [
+                "London",
+                "Birmingham",
+                "Manchester",
+                "Leeds",
+                "Glasgow",
+                "Liverpool",
+                "Newcastle",
+                "Sheffield",
+                "Bristol",
+                "Edinburgh",
+                "Leicester",
+                "Brighton",
+                "Cardiff",
+                "Belfast"
+            ]
+        },
+        {
+            "name": "United States",
+            "code": "US",
+            "cities": [
+                "New York",
+                "Los Angeles",
+                "Chicago",
+                "Houston",
+                "Phoenix",
+                "Philadelphia",
+                "San Antonio",
+                "San Diego",
+                "Dallas",
+                "San Jose",
+                "Austin",
+                "Jacksonville",
+                "Fort Worth",
+                "Columbus",
+                "Charlotte",
+                "San Francisco",
+                "Indianapolis",
+                "Seattle",
+                "Denver",
+                "Washington",
+                "Boston",
+                "El Paso",
+                "Nashville",
+                "Detroit",
+                "Oklahoma City",
+                "Portland",
+                "Las Vegas",
+                "Memphis",
+                "Louisville",
+                "Baltimore",
+                "Milwaukee",
+                "Albuquerque",
+                "Tucson",
+                "Fresno",
+                "Sacramento",
+                "Kansas City",
+                "Mesa",
+                "Atlanta",
+                "Omaha",
+                "Colorado Springs",
+                "Raleigh",
+                "Miami",
+                "Long Beach",
+                "Virginia Beach",
+                "Oakland",
+                "Minneapolis",
+                "Tampa",
+                "Tulsa",
+                "Arlington",
+                "New Orleans"
+            ]
+        },
+        {
+            "name": "Uruguay",
+            "code": "UY",
+            "cities": [
+                "Montevideo",
+                "Salto",
+                "Ciudad de la Costa",
+                "Paysandú",
+                "Las Piedras"
+            ]
+        },
+        {
+            "name": "Venezuela",
+            "code": "VE",
+            "cities": [
+                "Caracas",
+                "Maracaibo",
+                "Valencia",
+                "Barquisimeto",
+                "Maracay"
+            ]
+        },
+        {
+            "name": "Vietnam",
+            "code": "VN",
+            "cities": [
+                "Ho Chi Minh City",
+                "Hanoi",
+                "Da Nang",
+                "Haiphong",
+                "Can Tho",
+                "Bien Hoa",
+                "Nha Trang"
+            ]
+        }
+    ]
+}
