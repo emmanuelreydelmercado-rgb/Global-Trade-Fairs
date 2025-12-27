@@ -34,13 +34,8 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
     && touch database/database.sqlite \
     && chmod -R 775 storage bootstrap/cache database
 
-# Cache configuration
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
-
 # Expose port
 EXPOSE 10000
 
 # Start application
-CMD php artisan migrate --force --no-interaction && php artisan serve --host=0.0.0.0 --port=$PORT
+CMD php artisan config:cache && php artisan route:cache && php artisan migrate --force --no-interaction && php artisan serve --host=0.0.0.0 --port=$PORT
