@@ -38,7 +38,7 @@ RUN php artisan config:cache \
     && php artisan view:cache
 
 # Expose port
-EXPOSE 8080
+EXPOSE 10000
 
 # Start application
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+CMD php artisan migrate --force --no-interaction && php artisan serve --host=0.0.0.0 --port=$PORT
