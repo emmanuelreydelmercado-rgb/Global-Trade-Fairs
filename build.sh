@@ -13,6 +13,14 @@ mkdir -p bootstrap/cache
 echo "🔐 Setting permissions..."
 chmod -R 775 storage bootstrap/cache
 
+echo "🗑️ Clearing old cache..."
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+
+echo "🗄️ Running database migrations..."
+php artisan migrate --force
+
 echo "🎨 Caching configuration..."
 php artisan config:cache
 php artisan route:cache
