@@ -97,6 +97,11 @@ return [
             'retry_after' => 60,
         ],
 
+        'sendgrid_api' => [
+            'transport' => 'sendgrid_api',
+            'api_key' => env('SENDGRID_API_KEY'),
+        ],
+
     ],
 
     /*
