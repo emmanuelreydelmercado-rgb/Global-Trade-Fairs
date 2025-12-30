@@ -4,6 +4,7 @@
     <title>Register</title>
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
@@ -68,6 +69,18 @@
         <a href="{{ route('login') }}" class="text-decoration-none small">Already have an account? Log in</a>
     </div>
 </div>
+
+@if(session('registration_success'))
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Registration Successful!',
+        text: '{{ session('registration_success') }}',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#1a73e8'
+    });
+</script>
+@endif
 
 </body>
 </html>

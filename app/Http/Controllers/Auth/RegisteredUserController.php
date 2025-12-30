@@ -38,22 +38,9 @@ class RegisteredUserController extends Controller
 
         $profilePicName = 'default.jpg';
         if ($request->hasFile('profilepic')) {
-            try {
-                $file = $request->file('profilepic');
-                $profilePicName = time() . '_' . $file->getClientOriginalName();
-                
-                // Create directory if it doesn't exist
-                $uploadPath = public_path('profilepics');
-                if (!file_exists($uploadPath)) {
-                    mkdir($uploadPath, 0775, true);
-                }
-                
-                $file->move($uploadPath, $profilePicName);
-            } catch (\Exception $e) {
-                // If upload fails, just use default profile picture
-                \Log::warning('Profile picture upload failed: ' . $e->getMessage());
-                $profilePicName = 'default.jpg';
-            }
+            $file = $request->file('profilepic');
+            $profilePicName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('profilepics'), $profilePicName);
         }
 
         $user = User::create([
@@ -67,6 +54,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('verification.notice'));
+        // Return to register page with success message for popup
+        return back()->with('registration_success', 'Account created! Please check your Gmail to verify your email and access the system.');
     }
 }
