@@ -38,9 +38,22 @@ class RegisteredUserController extends Controller
 
         $profilePicName = 'default.jpg';
         if ($request->hasFile('profilepic')) {
-            $file = $request->file('profilepic');
-            $profilePicName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('profilepics'), $profilePicName);
+            try {
+                $file = $request->file('profilepic');
+                $profilePicName = time() . '_' . $file->getClientOriginalName();
+                
+                // Create directory if it doesn't exist
+                $uploadPath = public_path('profilepics');
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0775, true);
+                }
+                
+                $file->move($uploadPath, $profilePicName);
+            } catch (\Exception $e) {
+                // If upload fails, just use default profile picture
+                \Log::warning('Profile picture upload failed: ' . $e->getMessage());
+                $profilePicName = 'default.jpg';
+            }
         }
 
         $user = User::create([

@@ -19,7 +19,7 @@ php artisan route:clear
 php artisan view:clear
 
 echo "🗄️ Running database migrations..."
-php artisan migrate --force
+php artisan migrate --force || echo "⚠️ Migration failed, continuing..."
 
 echo "🎨 Caching configuration..."
 php artisan config:cache

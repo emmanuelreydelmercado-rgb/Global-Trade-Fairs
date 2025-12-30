@@ -27,3 +27,4 @@ services:
         value: sync
       - key: FILESYSTEM_DISK
         value: local
+
