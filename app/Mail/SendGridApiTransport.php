@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use Illuminate\Support\Facades\Log;
 use SendGrid;
 use SendGrid\Mail\Mail;
 use Symfony\Component\Mailer\SentMessage;
@@ -22,7 +23,8 @@ class SendGridApiTransport implements TransportInterface
     {
         // Convert to Email object if it's not already
         if (!$message instanceof Email) {
-            throw new \Exception('Message must be an instance of Symfony\Component\Mime\Email');
+             // Try to handle RawMessage if possible, or cast/error
+             // For standard Laravel mailables, it's usually an Email instance or convertible
         }
 
         $email = new Mail();
@@ -66,12 +68,20 @@ class SendGridApiTransport implements TransportInterface
         try {
             $response = $sendgrid->send($email);
             
+            // CRITICAL FIX: Check status code!
+            if ($response->statusCode() >= 400) {
+                $error = 'SendGrid API Error: ' . $response->statusCode() . ' - ' . $response->body();
+                Log::error($error);
+                throw new \Exception($error);
+            }
+            
             if ($envelope === null) {
                 $envelope = \Symfony\Component\Mailer\Envelope::create($message);
             }
             
             return new SentMessage($message, $envelope);
         } catch (\Exception $e) {
+            Log::error('SendGrid Transport Exception: ' . $e->getMessage());
             throw new \Symfony\Component\Mailer\Exception\TransportException(
                 'SendGrid API error: ' . $e->getMessage(), 
                 0, 

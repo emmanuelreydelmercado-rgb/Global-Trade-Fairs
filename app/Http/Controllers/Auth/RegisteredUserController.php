@@ -52,7 +52,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);
 
         // Return to register page with success message for popup
         return back()->with('registration_success', 'Account created! Please check your Gmail to verify your email and access the system.');
