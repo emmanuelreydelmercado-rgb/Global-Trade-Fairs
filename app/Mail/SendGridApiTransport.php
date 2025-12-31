@@ -6,6 +6,7 @@ use SendGrid;
 use SendGrid\Mail\Mail;
 use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\TransportInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\RawMessage;
 
 class SendGridApiTransport implements TransportInterface
@@ -19,47 +20,43 @@ class SendGridApiTransport implements TransportInterface
 
     public function send(RawMessage $message, ?\Symfony\Component\Mailer\Envelope $envelope = null): ?SentMessage
     {
+        // Convert to Email object if it's not already
+        if (!$message instanceof Email) {
+            throw new \Exception('Message must be an instance of Symfony\Component\Mime\Email');
+        }
+
         $email = new Mail();
         
-        // Parse the email message
-        $messageString = $message->toString();
-        
-        // Extract headers
-        if (method_exists($message, 'getHeaders')) {
-            $headers = $message->getHeaders();
-            
-            // From
-            if ($headers->has('from')) {
-                $from = $headers->get('from')->getBody();
-                if (preg_match('/<(.+?)>/', $from, $matches)) {
-                    $email->setFrom($matches[1]);
-                } else {
-                    $email->setFrom($from);
-                }
-            }
-            
-            // To
-            if ($headers->has('to')) {
-                $to = $headers->get('to')->getBody();
-                if (preg_match('/<(.+?)>/', $to, $matches)) {
-                    $email->addTo($matches[1]);
-                } else {
-                    $email->addTo($to);
-                }
-            }
-            
-            // Subject
-            if ($headers->has('subject')) {
-                $email->setSubject($headers->get('subject')->getBody());
-            }
+        // From address
+        $from = $message->getFrom();
+        if (!empty($from)) {
+            $fromAddress = $from[0];
+            $email->setFrom(
+                $fromAddress->getAddress(),
+                $fromAddress->getName() ?? ''
+            );
         }
         
-        // Body
-        if (method_exists($message, 'getBody')) {
-            $body = $message->getBody();
-            if ($body) {
-                $bodyString = $body->bodyToString();
-                $email->addContent("text/html", $bodyString);
+        // To addresses
+        $to = $message->getTo();
+        foreach ($to as $address) {
+            $email->addTo(
+                $address->getAddress(),
+                $address->getName() ?? ''
+            );
+        }
+        
+        // Subject
+        $email->setSubject($message->getSubject() ?? '');
+        
+        // Body - try HTML first, fallback to text
+        $htmlBody = $message->getHtmlBody();
+        if ($htmlBody) {
+            $email->addContent("text/html", $htmlBody);
+        } else {
+            $textBody = $message->getTextBody();
+            if ($textBody) {
+                $email->addContent("text/plain", $textBody);
             }
         }
 
@@ -75,7 +72,11 @@ class SendGridApiTransport implements TransportInterface
             
             return new SentMessage($message, $envelope);
         } catch (\Exception $e) {
-            throw new \Symfony\Component\Mailer\Exception\TransportException('SendGrid API error: ' . $e->getMessage(), 0, $e);
+            throw new \Symfony\Component\Mailer\Exception\TransportException(
+                'SendGrid API error: ' . $e->getMessage(), 
+                0, 
+                $e
+            );
         }
     }
 
