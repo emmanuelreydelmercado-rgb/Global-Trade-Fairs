@@ -2,12 +2,13 @@
 
 namespace App\Mail;
 
-use Illuminate\Mail\Transport\Transport;
 use SendGrid;
 use SendGrid\Mail\Mail;
-use Swift_Mime_SimpleMessage;
+use Symfony\Component\Mailer\SentMessage;
+use Symfony\Component\Mailer\Transport\TransportInterface;
+use Symfony\Component\Mime\RawMessage;
 
-class SendGridApiTransport extends Transport
+class SendGridApiTransport implements TransportInterface
 {
     protected $apiKey;
 
@@ -16,45 +17,50 @@ class SendGridApiTransport extends Transport
         $this->apiKey = $apiKey;
     }
 
-    public function send(\Symfony\Component\Mime\RawMessage $message, ?\Symfony\Component\Mailer\Envelope $envelope = null): ?\Symfony\Component\Mailer\SentMessage
+    public function send(RawMessage $message, ?\Symfony\Component\Mailer\Envelope $envelope = null): ?SentMessage
     {
         $email = new Mail();
         
-        // Get message details
-        $messageStr = $message->toString();
+        // Parse the email message
+        $messageString = $message->toString();
         
-        // Parse headers and body
-        $headers = $message->getHeaders();
-        
-        // From
-        $from = $headers->get('From');
-        if ($from) {
-            $fromAddresses = $from->getAddresses();
-            if (!empty($fromAddresses)) {
-                $fromAddr = reset($fromAddresses);
-                $email->setFrom($fromAddr->getAddress(), $fromAddr->getName());
+        // Extract headers
+        if (method_exists($message, 'getHeaders')) {
+            $headers = $message->getHeaders();
+            
+            // From
+            if ($headers->has('from')) {
+                $from = $headers->get('from')->getBody();
+                if (preg_match('/<(.+?)>/', $from, $matches)) {
+                    $email->setFrom($matches[1]);
+                } else {
+                    $email->setFrom($from);
+                }
             }
-        }
-        
-        // To
-        $to = $headers->get('To');
-        if ($to) {
-            $toAddresses = $to->getAddresses();
-            foreach ($toAddresses as $addr) {
-                $email->addTo($addr->getAddress(), $addr->getName());
+            
+            // To
+            if ($headers->has('to')) {
+                $to = $headers->get('to')->getBody();
+                if (preg_match('/<(.+?)>/', $to, $matches)) {
+                    $email->addTo($matches[1]);
+                } else {
+                    $email->addTo($to);
+                }
             }
-        }
-        
-        // Subject
-        $subject = $headers->get('Subject');
-        if ($subject) {
-            $email->setSubject($subject->getBodyAsString());
+            
+            // Subject
+            if ($headers->has('subject')) {
+                $email->setSubject($headers->get('subject')->getBody());
+            }
         }
         
         // Body
-        $body = $message->getBody();
-        if ($body) {
-            $email->addContent("text/html", $body->bodyToString());
+        if (method_exists($message, 'getBody')) {
+            $body = $message->getBody();
+            if ($body) {
+                $bodyString = $body->bodyToString();
+                $email->addContent("text/html", $bodyString);
+            }
         }
 
         // Send via SendGrid API
@@ -62,14 +68,19 @@ class SendGridApiTransport extends Transport
         
         try {
             $response = $sendgrid->send($email);
-            return new \Symfony\Component\Mailer\SentMessage($message, $envelope ?? \Symfony\Component\Mailer\Envelope::create($message));
+            
+            if ($envelope === null) {
+                $envelope = \Symfony\Component\Mailer\Envelope::create($message);
+            }
+            
+            return new SentMessage($message, $envelope);
         } catch (\Exception $e) {
-            throw $e;
+            throw new \Symfony\Component\Mailer\Exception\TransportException('SendGrid API error: ' . $e->getMessage(), 0, $e);
         }
     }
 
     public function __toString(): string
     {
-        return 'sendgrid';
+        return 'sendgrid_api';
     }
 }
