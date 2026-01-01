@@ -22,10 +22,23 @@
         .logo {
             text-align: center;
             margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            border-radius: 8px 8px 0 0;
+            margin: -40px -40px 30px -40px;
         }
-        .logo img {
-            max-width: 200px;
-            height: auto;
+        .logo h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .logo p {
+            color: #e6f2ff;
+            font-size: 14px;
+            margin: 5px 0 0 0;
         }
         .content {
             line-height: 1.6;
@@ -57,8 +70,8 @@
 <body>
     <div class="container">
         <div class="logo">
-            {{-- Assuming favicon.png is the logo based on file listing. Adjust path if strict logo exists --}}
-            <img src="{{ asset('favicon.png') }}" alt="Global Trade Fairs Logo">
+            <h1>🌍 GLOBAL TRADE FAIRS</h1>
+            <p>Connecting Businesses Worldwide</p>
         </div>
         
         <div class="content">
