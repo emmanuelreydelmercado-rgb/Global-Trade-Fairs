@@ -53,6 +53,12 @@
             </h1>
         </div>
 
+        <!-- Navigation -->
+        <nav class="hidden lg:flex items-center gap-6">
+            <a href="{{ route('home') }}" class="text-primary font-semibold">Events</a>
+            <a href="{{ route('tour.packages') }}" class="text-gray-700 hover:text-primary transition-colors">Tour Packages</a>
+        </nav>
+
         <!-- Search -->
         <form action="{{ route('home') }}" method="GET" class="hidden md:block w-[420px] relative">
             <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>

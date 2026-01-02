@@ -38,4 +38,4 @@ RUN mkdir -p storage/framework/{sessions,views,cache} \
 EXPOSE 10000
 
 # Start application
-CMD php artisan config:cache && php artisan route:cache && php artisan migrate --force --no-interaction && php artisan serve --host=0.0.0.0 --port=$PORT
+CMD php artisan config:cache && php artisan route:cache && php artisan migrate --force --no-interaction && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=$PORT

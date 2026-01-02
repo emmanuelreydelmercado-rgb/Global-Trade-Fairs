@@ -16,6 +16,35 @@ use App\Http\Controllers\HomeController;
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+/*
+|--------------------------------------------------------------------------
+| TOUR PACKAGES
+|--------------------------------------------------------------------------
+*/
+Route::get('/tour-packages', function () {
+    return view('tour-packages');
+})->name('tour.packages');
+
+/*
+|--------------------------------------------------------------------------
+| PAYMENT ROUTES (Protected - Login Required)
+|--------------------------------------------------------------------------
+*/
+use App\Http\Controllers\PaymentController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payment/{package}', [PaymentController::class, 'showPaymentPage'])->name('payment.details');
+    Route::post('/payment/create-order', [PaymentController::class, 'createOrder'])->name('payment.create');
+    Route::post('/payment/verify', [PaymentController::class, 'verifyPayment'])->name('payment.verify');
+    Route::get('/payment/success/{paymentId}', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+    Route::get('/payment/failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
+    Route::get('/payment/download/{paymentId}', [PaymentController::class, 'downloadReceipt'])->name('payment.download');
+    
+    // Admin payment management
+    Route::get('/admin/payments', [PaymentController::class, 'index'])->name('admin.payments');
+});
+
+
 
 /*
 |--------------------------------------------------------------------------
