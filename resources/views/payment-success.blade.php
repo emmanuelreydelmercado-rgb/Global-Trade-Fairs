@@ -112,14 +112,14 @@
         <!-- Action Buttons -->
         <div class="flex flex-col gap-4">
             <!-- Download Report Button -->
-            <button 
-                onclick="window.print()"
+            <a 
+                href="{{ route('payment.download', $payment->id) }}"
                 class="w-full py-4 bg-green-600 text-white rounded-xl font-semibold
                        hover:bg-green-700 transition-all duration-300
                        flex items-center justify-center gap-2 shadow-lg print:hidden">
                 <span class="material-icons">file_download</span>
                 <span>Download Report / Save as PDF</span>
-            </button>
+            </a>
             
             <div class="flex gap-4">
                 <a href="{{ route('tour.packages') }}" 
