@@ -80,8 +80,8 @@
 <body class="bg-[#f4f7fb] font-display min-h-screen flex flex-col">
 
 <!-- ================= HEADER ================= -->
-<header class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
+<header class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b shadow-sm" x-data="{ mobileMenuOpen: false }">
+    <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center gap-4">
 
         <div class="flex items-center gap-3">
             <img src="{{ asset('favicon.png') }}" class="w-10 rounded-lg">
@@ -91,39 +91,110 @@
         </div>
 
         <!-- Navigation -->
-        <nav class="hidden md:flex items-center gap-6">
+        <nav class="hidden lg:flex items-center gap-6">
             <a href="{{ route('home') }}" class="text-gray-700 hover:text-primary transition-colors">Events</a>
-            <a href="#" class="text-primary font-semibold">Tour Packages</a>
+            <a href="{{ route('tour.packages') }}" class="text-primary font-semibold">Tour Packages</a>
         </nav>
 
-        {{-- Auth Section --}}
+        <!-- Search -->
+        <form action="{{ route('home') }}" method="GET" class="hidden md:block w-[420px] relative">
+            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search Events, Organizers, or Venues..."
+                class="w-full pl-10 pr-4 py-2 rounded-full border focus:ring-primary focus:border-primary">
+        </form>
+
+    
+    {{-- Auth Section --}}
+    <div class="hidden lg:flex items-center gap-4">
         @if(Auth::check())
-            <div class="flex items-center gap-3">
-                <img
-                    src="{{ auth()->user()->profilepic
-                        ? asset('profilepics/' . auth()->user()->profilepic)
-                        : asset('profilepics/default.jpg') }}"
-                    class="w-8 h-8 rounded-full object-cover"
-                    alt="User"
+            <!-- Profile Dropdown -->
+            <div class="relative" x-data="{ profileOpen: false }">
+                <!-- Trigger: Profile Image -->
+                <button 
+                    @click="profileOpen = !profileOpen" 
+                    @click.outside="profileOpen = false"
+                    class="relative flex items-center gap-2 focus:outline-none transition-transform hover:scale-105"
                 >
-                <span class="text-sm text-gray-700">
-                    {{ auth()->user()->name }}
-                </span>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button
-                       type="submit"
-                           class="inline-flex items-center px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">
-                                    Logout
-                    </button>
-                </form>
+                    <img
+                        src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
+                            ? asset('profilepics/' . auth()->user()->profilepic)
+                            : asset('profilepics/user_avatar.png') }}"
+                        class="w-10 h-10 rounded-full object-cover border-2 border-white ring-2 ring-blue-500 shadow-md"
+                        alt="User Profile"
+                    >
+                    <!-- Lil Green Circle (Online Status) -->
+                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div 
+                    x-show="profileOpen"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                    x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                    class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden"
+                    style="display: none;"
+                >
+                    <!-- User Info Section -->
+                    <div class="flex flex-col items-center p-6 border-b border-gray-50 bg-gradient-to-b from-white to-gray-50/50">
+                        <div class="relative mb-3">
+                            <img
+                                src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
+                                    ? asset('profilepics/' . auth()->user()->profilepic)
+                                    : asset('profilepics/user_avatar.png') }}"
+                                class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white"
+                                alt="User"
+                            >
+                            <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+                        </div>
+                        
+                        <h3 class="font-bold text-gray-800 text-lg text-center leading-tight">
+                            {{ auth()->user()->name }}
+                        </h3>
+                        <p class="text-xs text-gray-500 text-center mt-1 font-medium bg-gray-100 px-3 py-1 rounded-full">
+                            {{ auth()->user()->email }}
+                        </p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="p-2 bg-gray-50/30">
+                        <!-- You can add more menu items here later -->
+                        
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-all group"
+                            >
+                                <span class="material-icons text-xl group-hover:-translate-x-1 transition-transform">logout</span>
+                                Sign Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         @else
             <a href="{{ route('login') }}"
-               class="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary-hover">
+            class="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary-hover">
                 Sign In
             </a>
         @endif
+
+        <!-- Mobile Menu Button (Hidden in favor of Bottom Nav) -->
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+            <span class="material-icons" x-text="mobileMenuOpen ? 'close' : 'menu'">menu</span>
+        </button>
+    </div>
+
+
+
 
     </div>
 </header>
@@ -591,6 +662,79 @@
         © 2025 Global Trade Fairs — Powered by Reydel Mercado Online services
     </div>
 </footer>
+
+<!-- ================= MOBILE APP NAVIGATION ================= -->
+<div class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-200 z-[100] grid grid-cols-3 gap-1 px-2 py-3 md:hidden shadow-[0_-5px_20px_rgba(0,0,0,0.05)] pb-safe">
+    
+    <a href="{{ route('home') }}" class="flex flex-col items-center justify-center gap-1 group">
+        <div class="p-1 rounded-xl transition-all duration-300 {{ request()->routeIs('home') ? 'bg-primary/10 text-primary' : 'text-gray-400 group-hover:text-gray-600' }}">
+            <span class="material-icons text-2xl transition-transform group-active:scale-90">home</span>
+        </div>
+        <span class="text-[10px] font-semibold {{ request()->routeIs('home') ? 'text-primary' : 'text-gray-400' }}">Home</span>
+    </a>
+
+    <a href="{{ route('tour.packages') }}" class="flex flex-col items-center justify-center gap-1 group">
+        <div class="p-1 rounded-xl transition-all duration-300 {{ request()->routeIs('tour.packages') ? 'bg-primary/10 text-primary' : 'text-gray-400 group-hover:text-gray-600' }}">
+            <span class="material-icons text-2xl transition-transform group-active:scale-90">flight</span>
+        </div>
+        <span class="text-[10px] font-semibold {{ request()->routeIs('tour.packages') ? 'text-primary' : 'text-gray-400' }}">Tours</span>
+    </a>
+
+    @auth
+        <div class="relative flex flex-col items-center justify-center gap-1" x-data="{ open: false }">
+            <button @click="open = !open" class="flex flex-col items-center justify-center gap-1 group w-full">
+                <div class="p-0.5 rounded-full border-2 transition-all duration-300 {{ Auth::check() ? 'border-primary' : 'border-transparent' }}">
+                     <img src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg') ? asset('profilepics/' . auth()->user()->profilepic) : asset('profilepics/user_avatar.png') }}" 
+                         class="w-6 h-6 rounded-full object-cover">
+                </div>
+                <span class="text-[10px] font-semibold text-gray-400">Profile</span>
+            </button>
+
+            <!-- Popover Menu -->
+            <div x-show="open" 
+                 @click.outside="open = false" 
+                 class="absolute bottom-20 right-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transform origin-bottom-right"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                 style="display: none;">
+                 
+                 <div class="p-4 bg-gray-50 border-b">
+                    <p class="text-sm font-bold text-gray-900 truncate">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
+                 </div>
+                 
+                 <div class="p-2">
+                     <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 text-red-600 text-sm font-medium hover:bg-red-50 rounded-xl transition-colors">
+                            <span class="material-icons text-[18px]">logout</span>
+                            Sign Out
+                        </button>
+                    </form>
+                 </div>
+            </div>
+        </div>
+    @else
+        <a href="{{ route('login') }}" class="flex flex-col items-center justify-center gap-1 group">
+            <div class="p-1 rounded-xl transition-all duration-300 text-gray-400 group-hover:text-gray-600">
+                <span class="material-icons text-2xl transition-transform group-active:scale-90">account_circle</span>
+            </div>
+            <span class="text-[10px] font-semibold text-gray-400">Login</span>
+        </a>
+    @endauth
+
+</div>
+
+<style>
+    /* Safe area padding for iPhones with home indicator */
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 12px);
+    }
+</style>
 
 </body>
 </html>
