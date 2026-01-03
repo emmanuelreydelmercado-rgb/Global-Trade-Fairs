@@ -3,21 +3,37 @@
 <head>
     <title>Register</title>
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
         .user-card {
             border-radius: 12px;
             border: none;
+            width: 100%;
+            max-width: 440px;
+        }
+        @media (max-width: 576px) {
+            .user-card {
+                padding: 1.5rem !important;
+            }
+            body {
+                padding: 10px;
+            }
         }
     </style>
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100">
+<body>
 
-<div class="card user-card p-4 shadow-lg" style="width: 400px;">
+<div class="card user-card p-4 shadow-lg">
     <div class="text-center mb-3">
         <h3 class="mt-3">Create Account</h3>
         <p class="text-muted small">Join us today</p>
