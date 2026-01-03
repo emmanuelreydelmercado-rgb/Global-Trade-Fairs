@@ -43,7 +43,7 @@
 
 
 <!-- ================= HEADER ================= -->
-<header class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b shadow-sm">
+<header class="sticky top-0 z-50 bg-white/80 backdrop-blur border-b shadow-sm" x-data="{ mobileMenuOpen: false }">
     <div class="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
 
         <div class="flex items-center gap-3">
@@ -72,45 +72,79 @@
 
     
     {{-- Auth Section --}}
-@if(Auth::check())
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-4">
+        @if(Auth::check())
+            <div class="flex items-center gap-3">
 
-        <img
-            src="{{ auth()->user()->profilepic
-                ? asset('profilepics/' . auth()->user()->profilepic)
-                : asset('profilepics/default.jpg') }}"
-            class="w-8 h-8 rounded-full object-cover"
-            alt="User"
-        >
+                <img
+                    src="{{ auth()->user()->profilepic
+                        ? asset('profilepics/' . auth()->user()->profilepic)
+                        : asset('profilepics/default.jpg') }}"
+                    class="w-8 h-8 rounded-full object-cover"
+                    alt="User"
+                >
 
-        <span class="text-sm text-gray-700">
-            {{ auth()->user()->name }}
-        </span>
+                <span class="text-sm text-gray-700 hidden sm:block">
+                    {{ auth()->user()->name }}
+                </span>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button
-               type="submit"
-                   class="inline-flex items-center px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">
-                            Logout
-            </button>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button
+                    type="submit"
+                        class="inline-flex items-center px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">
+                                    Logout
+                    </button>
 
-        </form>
+                </form>
+
+            </div>
+        @else
+            <a href="{{ route('login') }}"
+            class="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary-hover">
+                Sign In
+            </a>
+        @endif
+
+        <!-- Mobile Menu Button -->
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+            <span class="material-icons" x-text="mobileMenuOpen ? 'close' : 'menu'">menu</span>
+        </button>
+    </div>
+
+
+
+
+
+
 
     </div>
-@else
-    <a href="{{ route('login') }}"
-       class="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary-hover">
-        Sign In
-    </a>
-@endif
 
-
-
-
-
-
-
+    <!-- Mobile Menu -->
+    <div 
+        x-show="mobileMenuOpen" 
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 -translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-2"
+        class="lg:hidden bg-white border-t p-4 shadow-lg absolute w-full left-0 top-20 flex flex-col gap-4" 
+        style="display: none;"
+    >
+        <a href="{{ route('home') }}" class="text-lg font-semibold text-gray-800 hover:text-primary">Events</a>
+        <a href="{{ route('tour.packages') }}" class="text-lg font-semibold text-gray-800 hover:text-primary">Tour Packages</a>
+        
+        <!-- Mobile Search -->
+        <form action="{{ route('home') }}" method="GET" class="relative">
+            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search..."
+                class="w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-primary focus:border-primary">
+        </form>
     </div>
 </header>
 
