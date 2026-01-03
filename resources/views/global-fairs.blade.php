@@ -85,7 +85,7 @@
                     <img
                         src="{{ auth()->user()->profilepic
                             ? asset('profilepics/' . auth()->user()->profilepic)
-                            : asset('profilepics/profpic.png') }}"
+                            : asset('profilepics/profpic.png?v=' . time()) }}"
                         class="w-10 h-10 rounded-full object-cover border-2 border-white ring-2 ring-blue-500 shadow-md"
                         alt="User Profile"
                     >
@@ -111,7 +111,7 @@
                             <img
                                 src="{{ auth()->user()->profilepic
                                     ? asset('profilepics/' . auth()->user()->profilepic)
-                                    : asset('profilepics/profpic.png') }}"
+                                    : asset('profilepics/profpic.png?v=' . time()) }}"
                                 class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white"
                                 alt="User"
                             >
@@ -634,7 +634,7 @@ am5.ready(function () {
         <div class="relative flex flex-col items-center justify-center gap-1" x-data="{ open: false }">
             <button @click="open = !open" class="flex flex-col items-center justify-center gap-1 group w-full">
                 <div class="p-0.5 rounded-full border-2 transition-all duration-300 {{ Auth::check() ? 'border-primary' : 'border-transparent' }}">
-                     <img src="{{ auth()->user()->profilepic ? asset('profilepics/' . auth()->user()->profilepic) : asset('profilepics/profpic.png') }}" 
+                     <img src="{{ auth()->user()->profilepic ? asset('profilepics/' . auth()->user()->profilepic) : asset('profilepics/profpic.png?v=' . time()) }}" 
                          class="w-6 h-6 rounded-full object-cover">
                 </div>
                 <span class="text-[10px] font-semibold text-gray-400">Profile</span>
