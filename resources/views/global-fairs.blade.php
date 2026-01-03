@@ -85,7 +85,7 @@
                     <img
                         src="{{ auth()->user()->profilepic
                             ? asset('profilepics/' . auth()->user()->profilepic)
-                            : asset('profilepics/default.png') }}"
+                            : asset('profilepics/profpic.png') }}"
                         class="w-10 h-10 rounded-full object-cover border-2 border-white ring-2 ring-blue-500 shadow-md"
                         alt="User Profile"
                     >
@@ -111,7 +111,7 @@
                             <img
                                 src="{{ auth()->user()->profilepic
                                     ? asset('profilepics/' . auth()->user()->profilepic)
-                                    : asset('profilepics/default.png') }}"
+                                    : asset('profilepics/profpic.png') }}"
                                 class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white"
                                 alt="User"
                             >
@@ -150,8 +150,8 @@
             </a>
         @endif
 
-        <!-- Mobile Menu Button -->
-        <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+        <!-- Mobile Menu Button (Hidden in favor of Bottom Nav) -->
+        <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
             <span class="material-icons" x-text="mobileMenuOpen ? 'close' : 'menu'">menu</span>
         </button>
     </div>
@@ -238,6 +238,8 @@
         <div
             x-data="{ x: 0, y: 0 }"
             @mousemove="
+                // Disable tilt on mobile for smooth scrolling
+                if (window.innerWidth < 1024) return;
                 const r = $el.getBoundingClientRect();
                 x = ((event.clientX - r.left) / r.width - 0.5) * 10;
                 y = ((event.clientY - r.top) / r.height - 0.5) * -10;
@@ -600,6 +602,89 @@ am5.ready(function () {
     }
 </style>
 @endguest
+
+
+<!-- ================= MOBILE APP NAVIGATION ================= -->
+<div class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-200 z-[100] grid grid-cols-4 gap-1 px-2 py-3 md:hidden shadow-[0_-5px_20px_rgba(0,0,0,0.05)] pb-safe">
+    
+    <a href="{{ route('home') }}" class="flex flex-col items-center justify-center gap-1 group">
+        <div class="p-1 rounded-xl transition-all duration-300 {{ request()->routeIs('home') ? 'bg-primary/10 text-primary' : 'text-gray-400 group-hover:text-gray-600' }}">
+            <span class="material-icons text-2xl transition-transform group-active:scale-90">home</span>
+        </div>
+        <span class="text-[10px] font-semibold {{ request()->routeIs('home') ? 'text-primary' : 'text-gray-400' }}">Home</span>
+    </a>
+
+    <button @click="window.scrollTo({top: 0, behavior: 'smooth'}); document.querySelector('input[name=search]').focus()" 
+            class="flex flex-col items-center justify-center gap-1 group relative">
+        <div class="absolute -top-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg shadow-primary/30 flex items-center justify-center border-4 border-[#f4f7fb] transform transition-transform group-active:scale-90">
+            <span class="material-icons text-2xl">search</span>
+        </div>
+        <div class="h-6"></div> <!-- Spacer for the floating button -->
+        <span class="text-[10px] font-semibold text-gray-400 mt-1">Search</span>
+    </button>
+
+    <a href="{{ route('tour.packages') }}" class="flex flex-col items-center justify-center gap-1 group">
+        <div class="p-1 rounded-xl transition-all duration-300 {{ request()->routeIs('tour.packages') ? 'bg-primary/10 text-primary' : 'text-gray-400 group-hover:text-gray-600' }}">
+            <span class="material-icons text-2xl transition-transform group-active:scale-90">flight</span>
+        </div>
+        <span class="text-[10px] font-semibold {{ request()->routeIs('tour.packages') ? 'text-primary' : 'text-gray-400' }}">Tours</span>
+    </a>
+
+    @auth
+        <div class="relative flex flex-col items-center justify-center gap-1" x-data="{ open: false }">
+            <button @click="open = !open" class="flex flex-col items-center justify-center gap-1 group w-full">
+                <div class="p-0.5 rounded-full border-2 transition-all duration-300 {{ Auth::check() ? 'border-primary' : 'border-transparent' }}">
+                     <img src="{{ auth()->user()->profilepic ? asset('profilepics/' . auth()->user()->profilepic) : asset('profilepics/profpic.png') }}" 
+                         class="w-6 h-6 rounded-full object-cover">
+                </div>
+                <span class="text-[10px] font-semibold text-gray-400">Profile</span>
+            </button>
+
+            <!-- Popover Menu -->
+            <div x-show="open" 
+                 @click.outside="open = false" 
+                 class="absolute bottom-20 right-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transform origin-bottom-right"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                 style="display: none;">
+                 
+                 <div class="p-4 bg-gray-50 border-b">
+                    <p class="text-sm font-bold text-gray-900 truncate">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
+                 </div>
+                 
+                 <div class="p-2">
+                     <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 text-red-600 text-sm font-medium hover:bg-red-50 rounded-xl transition-colors">
+                            <span class="material-icons text-[18px]">logout</span>
+                            Sign Out
+                        </button>
+                    </form>
+                 </div>
+            </div>
+        </div>
+    @else
+        <a href="{{ route('login') }}" class="flex flex-col items-center justify-center gap-1 group">
+            <div class="p-1 rounded-xl transition-all duration-300 text-gray-400 group-hover:text-gray-600">
+                <span class="material-icons text-2xl transition-transform group-active:scale-90">account_circle</span>
+            </div>
+            <span class="text-[10px] font-semibold text-gray-400">Login</span>
+        </a>
+    @endauth
+
+</div>
+
+<style>
+    /* Safe area padding for iPhones with home indicator */
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom, 12px);
+    }
+</style>
 
 </body>
 </html>
