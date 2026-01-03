@@ -72,7 +72,7 @@
 
     
     {{-- Auth Section --}}
-    <div class="flex items-center gap-4">
+    <div class="hidden lg:flex items-center gap-4">
         @if(Auth::check())
             <!-- Profile Dropdown -->
             <div class="relative" x-data="{ profileOpen: false }">
@@ -202,6 +202,20 @@
             <p class="text-sm text-gray-500 mt-1">
                 Discover the best trade fairs happening around the globe.
             </p>
+        </div>
+        
+        <!-- Mobile Search Bar (Only visible on mobile) -->
+        <div class="block md:hidden w-full mt-4 mb-2">
+            <form action="{{ route('home') }}" method="GET" class="relative">
+                <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                <input
+                    id="mobile-search-input"
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Search Events..."
+                    class="w-full pl-10 pr-4 py-3 rounded-xl border-gray-200 shadow-sm focus:ring-primary focus:border-primary text-sm">
+            </form>
         </div>
 
         <div class="mt-4 sm:mt-0 flex gap-3 items-center">
@@ -614,13 +628,12 @@ am5.ready(function () {
         <span class="text-[10px] font-semibold {{ request()->routeIs('home') ? 'text-primary' : 'text-gray-400' }}">Home</span>
     </a>
 
-    <button @click="window.scrollTo({top: 0, behavior: 'smooth'}); document.querySelector('input[name=search]').focus()" 
-            class="flex flex-col items-center justify-center gap-1 group relative">
-        <div class="absolute -top-8 bg-primary text-white w-12 h-12 rounded-full shadow-lg shadow-primary/30 flex items-center justify-center border-4 border-[#f4f7fb] transform transition-transform group-active:scale-90">
-            <span class="material-icons text-2xl">search</span>
+    <button @click="window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('mobile-search-input').focus()" 
+            class="flex flex-col items-center justify-center gap-1 group">
+        <div class="p-1 rounded-xl transition-all duration-300 text-gray-400 group-hover:text-gray-600">
+            <span class="material-icons text-2xl transition-transform group-active:scale-90">search</span>
         </div>
-        <div class="h-6"></div> <!-- Spacer for the floating button -->
-        <span class="text-[10px] font-semibold text-gray-400 mt-1">Search</span>
+        <span class="text-[10px] font-semibold text-gray-400">Search</span>
     </button>
 
     <a href="{{ route('tour.packages') }}" class="flex flex-col items-center justify-center gap-1 group">
