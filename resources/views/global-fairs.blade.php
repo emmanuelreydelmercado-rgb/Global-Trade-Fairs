@@ -74,30 +74,74 @@
     {{-- Auth Section --}}
     <div class="flex items-center gap-4">
         @if(Auth::check())
-            <div class="flex items-center gap-3">
-
-                <img
-                    src="{{ auth()->user()->profilepic
-                        ? asset('profilepics/' . auth()->user()->profilepic)
-                        : asset('profilepics/default.jpg') }}"
-                    class="w-8 h-8 rounded-full object-cover"
-                    alt="User"
+            <!-- Profile Dropdown -->
+            <div class="relative" x-data="{ profileOpen: false }">
+                <!-- Trigger: Profile Image -->
+                <button 
+                    @click="profileOpen = !profileOpen" 
+                    @click.outside="profileOpen = false"
+                    class="relative flex items-center gap-2 focus:outline-none transition-transform hover:scale-105"
                 >
+                    <img
+                        src="{{ auth()->user()->profilepic
+                            ? asset('profilepics/' . auth()->user()->profilepic)
+                            : asset('profilepics/default.jpg') }}"
+                        class="w-10 h-10 rounded-full object-cover border-2 border-white ring-2 ring-blue-500 shadow-md"
+                        alt="User Profile"
+                    >
+                    <!-- Lil Green Circle (Online Status) -->
+                    <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></span>
+                </button>
 
-                <span class="text-sm text-gray-700 hidden sm:block">
-                    {{ auth()->user()->name }}
-                </span>
+                <!-- Dropdown Menu -->
+                <div 
+                    x-show="profileOpen"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                    x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                    class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden"
+                    style="display: none;"
+                >
+                    <!-- User Info Section -->
+                    <div class="flex flex-col items-center p-6 border-b border-gray-50 bg-gradient-to-b from-white to-gray-50/50">
+                        <div class="relative mb-3">
+                            <img
+                                src="{{ auth()->user()->profilepic
+                                    ? asset('profilepics/' . auth()->user()->profilepic)
+                                    : asset('profilepics/default.jpg') }}"
+                                class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white"
+                                alt="User"
+                            >
+                            <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+                        </div>
+                        
+                        <h3 class="font-bold text-gray-800 text-lg text-center leading-tight">
+                            {{ auth()->user()->name }}
+                        </h3>
+                        <p class="text-xs text-gray-500 text-center mt-1 font-medium bg-gray-100 px-3 py-1 rounded-full">
+                            {{ auth()->user()->email }}
+                        </p>
+                    </div>
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button
-                    type="submit"
-                        class="inline-flex items-center px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">
-                                    Logout
-                    </button>
-
-                </form>
-
+                    <!-- Actions -->
+                    <div class="p-2 bg-gray-50/30">
+                        <!-- You can add more menu items here later -->
+                        
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-all group"
+                            >
+                                <span class="material-icons text-xl group-hover:-translate-x-1 transition-transform">logout</span>
+                                Sign Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         @else
             <a href="{{ route('login') }}"
@@ -462,6 +506,100 @@ am5.ready(function () {
         © 2025 Global Trade Fairs — Powered by Reydel Mercado Online services
     </div>
 </footer>
+
+<!-- SweetAlert2 for beautiful popups -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Login Prompt for Guest Users -->
+@guest
+<script>
+    // Check if user has already seen the popup in this session
+    if (!sessionStorage.getItem('loginPromptShown')) {
+        // Show popup after 7 seconds
+        setTimeout(function() {
+            Swal.fire({
+                title: '🎯 Unlock Full Access!',
+                imageUrl: '{{ asset("favicon.png") }}',
+                imageWidth: 80,
+                imageHeight: 80,
+                imageAlt: 'Global Trade Fairs Logo',
+                html: `
+                    <div style="text-align: center;">
+                        <p style="font-size: 16px; color: #555; margin-bottom: 20px;">
+                            Login to get full access to all features including:
+                        </p>
+                        <ul style="text-align: left; display: inline-block; color: #666;">
+                            <li>✅ Lookthrough all events</li>
+                            <li>✅ Personalized recommendations</li>
+                            <li>✅ Event reminders & notifications</li>
+                            <li>✅ Access to exclusive tour packages</li>
+                        </ul>
+                    </div>
+                `,
+
+                showCancelButton: true,
+                confirmButtonText: '🔐 Login Now',
+                cancelButtonText: 'Maybe Later',
+                confirmButtonColor: '#1a73e8',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true,
+                backdrop: `
+                    rgba(0,0,0,0.4)
+                    left top
+                    no-repeat
+                `,
+                customClass: {
+                    popup: 'animated-popup',
+                    title: 'popup-title',
+                    confirmButton: 'popup-confirm-btn',
+                    cancelButton: 'popup-cancel-btn'
+                },
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to login page
+                    window.location.href = "{{ route('login') }}";
+                }
+            });
+
+            // Mark that popup has been shown in this session
+            sessionStorage.setItem('loginPromptShown', 'true');
+        }, 7000); // 7 seconds delay
+    }
+</script>
+
+<style>
+    .animated-popup {
+        border-radius: 20px !important;
+        padding: 30px !important;
+    }
+    .popup-title {
+        font-size: 28px !important;
+        font-weight: 700 !important;
+        color: #1a73e8 !important;
+    }
+    .popup-confirm-btn {
+        padding: 12px 30px !important;
+        font-weight: 600 !important;
+        border-radius: 10px !important;
+        transition: all 0.3s ease !important;
+    }
+    .popup-confirm-btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 16px rgba(26, 115, 232, 0.3) !important;
+    }
+    .popup-cancel-btn {
+        padding: 12px 30px !important;
+        font-weight: 600 !important;
+        border-radius: 10px !important;
+    }
+</style>
+@endguest
 
 </body>
 </html>
