@@ -207,12 +207,12 @@
         >
 
             <!-- IMAGE -->
-            <div class="relative h-48 overflow-hidden">
+            <div class="relative h-48 overflow-hidden bg-gray-100">
                 <img
     src="{{ asset($form->image ? 'uploads/'.$form->image : 'uploads/default.jpg') }}"
-    class="w-full h-full object-cover
+    class="w-full h-full object-contain
            transition-transform duration-500 ease-out
-           group-hover:scale-110">
+           group-hover:scale-105">
 
 
                 @php
