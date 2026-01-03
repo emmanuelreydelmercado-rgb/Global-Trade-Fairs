@@ -83,7 +83,7 @@
                     class="relative flex items-center gap-2 focus:outline-none transition-transform hover:scale-105"
                 >
                     <img
-                        src="{{ auth()->user()->profilepic
+                        src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
                             ? asset('profilepics/' . auth()->user()->profilepic)
                             : asset('profilepics/user_avatar.png') }}"
                         class="w-10 h-10 rounded-full object-cover border-2 border-white ring-2 ring-blue-500 shadow-md"
@@ -109,7 +109,7 @@
                     <div class="flex flex-col items-center p-6 border-b border-gray-50 bg-gradient-to-b from-white to-gray-50/50">
                         <div class="relative mb-3">
                             <img
-                                src="{{ auth()->user()->profilepic
+                                src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
                                     ? asset('profilepics/' . auth()->user()->profilepic)
                                     : asset('profilepics/user_avatar.png') }}"
                                 class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white"
@@ -639,7 +639,7 @@ am5.ready(function () {
         <div class="relative flex flex-col items-center justify-center gap-1" x-data="{ open: false }">
             <button @click="open = !open" class="flex flex-col items-center justify-center gap-1 group w-full">
                 <div class="p-0.5 rounded-full border-2 transition-all duration-300 {{ Auth::check() ? 'border-primary' : 'border-transparent' }}">
-                     <img src="{{ auth()->user()->profilepic ? asset('profilepics/' . auth()->user()->profilepic) : asset('profilepics/user_avatar.png') }}" 
+                     <img src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg') ? asset('profilepics/' . auth()->user()->profilepic) : asset('profilepics/user_avatar.png') }}" 
                          class="w-6 h-6 rounded-full object-cover">
                 </div>
                 <span class="text-[10px] font-semibold text-gray-400">Profile</span>
