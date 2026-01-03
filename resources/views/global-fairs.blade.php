@@ -85,7 +85,7 @@
                     <img
                         src="{{ auth()->user()->profilepic
                             ? asset('profilepics/' . auth()->user()->profilepic)
-                            : asset('profilepics/default.jpg') }}"
+                            : asset('profilepics/default.png') }}"
                         class="w-10 h-10 rounded-full object-cover border-2 border-white ring-2 ring-blue-500 shadow-md"
                         alt="User Profile"
                     >
@@ -111,7 +111,7 @@
                             <img
                                 src="{{ auth()->user()->profilepic
                                     ? asset('profilepics/' . auth()->user()->profilepic)
-                                    : asset('profilepics/default.jpg') }}"
+                                    : asset('profilepics/default.png') }}"
                                 class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white"
                                 alt="User"
                             >
