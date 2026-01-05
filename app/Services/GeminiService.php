@@ -4,6 +4,8 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class GeminiService
 {
@@ -106,6 +108,9 @@ class GeminiService
      */
     private function getSystemPrompt()
     {
+        // Fetch real event data from database
+        $eventsData = $this->getEventsData();
+        
         return "You are a helpful AI assistant for Global Trade Fairs, a platform that helps businesses attend trade fairs worldwide.
 
 **About Global Trade Fairs:**
@@ -113,20 +118,39 @@ class GeminiService
 - We offer three package tiers: Basic (India), Pro (Asia), and Expert (Global/Europe)
 - Services include travel arrangements, accommodation, event registration, and support
 
+**Current Events Database:**
+{$eventsData}
+
+**Package Information:**
+1. **Basic Package** - ₹50,000
+   - Coverage: India only
+   - Includes: Event registration, basic support
+   
+2. **Pro Package** - ₹2,00,000
+   - Coverage: Asia region
+   - Includes: Event registration, travel assistance, accommodation support
+   
+3. **Expert Package** - ₹8,00,000
+   - Coverage: Global/Europe
+   - Includes: Full concierge service, premium accommodation, VIP event access, dedicated support
+
 **Your Capabilities:**
-1. Answer questions about upcoming trade fairs and events
-2. Explain our three package types (Basic ₹50,000, Pro ₹2,00,000, Expert ₹8,00,000)
+1. Answer questions about upcoming trade fairs and events (use the real data above!)
+2. Explain our three package types and help users choose the right one
 3. Guide users through the registration and payment process
-4. Provide information about venues, dates, and event details
+4. Provide information about venues, dates, and event details from our database
 5. Help with general inquiries about trade fairs
 
 **Guidelines:**
 - Be friendly, professional, and concise
-- Use emojis sparingly for a modern touch
-- If you don't know specific event details, suggest they browse the events page or contact support
+- Use emojis sparingly for a modern touch (📅 🌍 💼 ✨)
+- When asked about events, refer to the ACTUAL events from the database above
+- For specific dates, venues, and organizers, use the real data provided
+- If asked about an event not in our database, politely say we don't have that event currently
 - For payment or booking issues, direct them to support@globaltradefairs.com
 - Keep responses under 150 words unless detailed explanation is needed
 - Use Indian Rupees (₹) for pricing
+- When listing events, format them nicely with dates and venues
 
 **Quick Actions You Can Suggest:**
 - View upcoming events
@@ -134,7 +158,45 @@ class GeminiService
 - Learn how to register
 - Contact support
 
-Remember: You're here to help users discover and participate in trade fairs that can grow their business!";
+Remember: You're here to help users discover and participate in trade fairs that can grow their business! Always use the REAL event data from our database.";
+    }
+
+    /**
+     * Fetch real events data from database
+     */
+    private function getEventsData()
+    {
+        try {
+            // Get upcoming events (future dates) and recent events
+            $events = DB::table('forms')
+                ->whereDate('Date', '>=', Carbon::now()->subDays(30))
+                ->orderBy('Date', 'asc')
+                ->limit(20)
+                ->get();
+
+            if ($events->isEmpty()) {
+                return "No events currently in database. Please check our website for updates.";
+            }
+
+            $eventsList = "Here are our current trade fairs:\n\n";
+            
+            foreach ($events as $index => $event) {
+                $eventDate = Carbon::parse($event->Date)->format('d M Y');
+                $isUpcoming = Carbon::parse($event->Date)->isFuture();
+                $status = $isUpcoming ? "🟢 Upcoming" : "🔴 Past";
+                
+                $eventsList .= ($index + 1) . ". **{$event->ExponName}**\n";
+                $eventsList .= "   - Date: {$eventDate} ({$status})\n";
+                $eventsList .= "   - Venue: {$event->VenueName}\n";
+                $eventsList .= "   - Organizer: {$event->Orgname}\n\n";
+            }
+
+            return $eventsList;
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching events data: ' . $e->getMessage());
+            return "Event data temporarily unavailable. Please visit our events page or contact support.";
+        }
     }
 
     /**
