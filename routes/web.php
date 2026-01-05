@@ -61,16 +61,7 @@ Route::post('/event-form', [InputBoxController::class, 'addtable'])
 Route::get('/get-cities/{country}', [InputBoxController::class, 'getCities'])
     ->name('get.cities');
 
-// Debug Route for Chatbot (Temporary)
-Route::get('/debug-gemini', function () {
-    try {
-        $service = new App\Services\GeminiService();
-        $response = $service->generateResponse("Hello from Render! Are you working?");
-        return "✅ SUCCESS!<br>Response: " . $response . "<br><br>Model: " . config('services.gemini.model') . "<br>Key: " . substr(config('services.gemini.api_key'), 0, 10) . "...";
-    } catch (\Exception $e) {
-        return "❌ ERROR!<br>Message: " . $e->getMessage() . "<br><br>Trace: " . $e->getTraceAsString();
-    }
-});
+
 
 
 
