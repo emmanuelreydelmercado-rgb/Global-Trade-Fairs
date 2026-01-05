@@ -37,7 +37,9 @@ class Chatbot {
                 <!-- Header -->
                 <div class="chatbot-header">
                     <div class="chatbot-header-title">
-                        <span>🤖</span>
+                        <div class="chatbot-avatar-header">
+                            <img src="${window.chatbotConfig?.botLogo || '/images/email-logo.png'}" alt="Bot" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+                        </div>
                         <div>
                             <h3>GTF Assistant</h3>
                             <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.9;">
@@ -251,7 +253,7 @@ class Chatbot {
         const messageHTML = `
             <div class="message ${role}">
                 <div class="message-avatar">
-                    ${role === 'bot' ? '🤖' : '👤'}
+                   ${this.getAvatarHTML(role)}
                 </div>
                 <div>
                     <div class="message-bubble">
@@ -270,6 +272,23 @@ class Chatbot {
 
         messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
         this.scrollToBottom();
+    }
+
+    /**
+     * Get avatar HTML based on role and config
+     */
+    getAvatarHTML(role) {
+        if (role === 'bot') {
+            const logo = window.chatbotConfig?.botLogo || '/images/email-logo.png';
+            return `<img src="${logo}" alt="Bot" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            // User
+            const avatar = window.chatbotConfig?.userAvatar;
+            if (avatar) {
+                return `<img src="${avatar}" alt="User" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
+            }
+            return '👤';
+        }
     }
 
     /**
@@ -297,7 +316,9 @@ class Chatbot {
 
         const typingHTML = `
             <div class="message bot" id="typing-indicator">
-                <div class="message-avatar">🤖</div>
+                <div class="message-avatar">
+                    <img src="${window.chatbotConfig?.botLogo || '/images/email-logo.png'}" alt="Bot" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                </div>
                 <div class="typing-indicator active">
                     <div class="typing-dot"></div>
                     <div class="typing-dot"></div>
