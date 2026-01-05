@@ -143,35 +143,51 @@ class GeminiService
 6. Share information about past events for reference and planning
 
 **Guidelines:**
-- Be friendly, professional, and concise
-- Use emojis sparingly for a modern touch (📅 🌍 💼 ✨)
-- When asked about events, refer to the ACTUAL events from the database above
-- For specific dates, venues, and organizers, use the real data provided
-- If asked about an event not in our database, politely say we don't have that event currently
+- Be friendly, professional, and DETAILED
+- Use emojis to make responses engaging (📅 🌍 💼 ✨ 📞 📧 🔗)
+- **ALWAYS provide COMPLETE information** when asked about an event
+- Include ALL available details: date, venue, city, country, hall number, organizer, phone, email, registration link
+- When user asks about a specific event, give FULL details from the database above
+- When user asks about event details, provide EVERYTHING: date, venue, contact, registration link, etc.
+- When user asks about events in a city, list ALL matching events with full details
+- When user asks for contact info, provide phone AND email if available
+- When user asks about registration, provide the registration link
 - For payment or booking issues, direct them to support@globaltradefairs.com
-- Keep responses under 150 words unless detailed explanation is needed
+- Be SPECIFIC - use actual names, dates, phone numbers, emails from the database
+- Format responses clearly with bullet points or sections
 - Use Indian Rupees (₹) for pricing
-- When listing events, format them nicely with dates and venues
+
+**Response Style:**
+- SHORT questions → SHORT answers
+- SPECIFIC questions → DETAILED answers with ALL relevant data
+- 'Tell me about X event' → Provide COMPLETE details (date, venue, city, organizer, contact, registration)
+- 'What events in Mumbai?' → List ALL Mumbai events with key details
+- 'How to register for X?' → Provide registration link + contact info
 
 **Quick Actions You Can Suggest:**
 - View upcoming events
+- Get detailed information about specific events
+- Find events by city/country
+- Get contact information for organizers
+- Access registration links
 - Compare package options
 - Learn how to register
 - Contact support
 
-Remember: You're here to help users discover and participate in trade fairs that can grow their business! Always use the REAL event data from our database.";
+Remember: You're here to help users discover and participate in trade fairs! ALWAYS provide COMPLETE, DETAILED information from the database. Don't be vague - use the actual data!";
     }
 
     /**
-     * Fetch real events data from database
+     * Fetch real events data from database with FULL details
      */
     private function getEventsData()
     {
         try {
-            // Get all events, ordered by date (most recent first)
+            // Get all events with ALL fields, ordered by date (most recent first)
             $allEvents = DB::table('forms')
+                ->select('*')
                 ->orderBy('Date', 'desc')
-                ->limit(50) // Increased limit to include more historical data
+                ->limit(50)
                 ->get();
 
             if ($allEvents->isEmpty()) {
@@ -190,35 +206,40 @@ Remember: You're here to help users discover and participate in trade fairs that
                 }
             }
 
-            $eventsList = "";
+            $eventsList = "**COMPLETE EVENT DATABASE:**\n\n";
+            $eventsList .= "Total Events: " . count($allEvents) . " (Upcoming: " . count($upcomingEvents) . ", Past: " . count($pastEvents) . ")\n\n";
 
-            // Add upcoming events section
+            // Add upcoming events section with FULL details
             if (!empty($upcomingEvents)) {
-                $eventsList .= "**🟢 UPCOMING EVENTS:**\n\n";
-                foreach (array_slice($upcomingEvents, 0, 15) as $index => $event) {
-                    $eventDate = Carbon::parse($event->Date)->format('d M Y');
-                    $eventsList .= ($index + 1) . ". **{$event->ExponName}**\n";
-                    $eventsList .= "   - Date: {$eventDate}\n";
-                    $eventsList .= "   - Venue: {$event->VenueName}\n";
-                    $eventsList .= "   - Organizer: {$event->Orgname}\n\n";
+                $eventsList .= "═══════════════════════════════════════\n";
+                $eventsList .= "🟢 UPCOMING EVENTS (" . count($upcomingEvents) . ")\n";
+                $eventsList .= "═══════════════════════════════════════\n\n";
+                
+                foreach (array_slice($upcomingEvents, 0, 20) as $index => $event) {
+                    $eventsList .= $this->formatEventDetails($event, $index + 1, true);
                 }
             }
 
-            // Add past events section
+            // Add past events section with FULL details
             if (!empty($pastEvents)) {
-                $eventsList .= "\n**� PAST EVENTS (For Reference):**\n\n";
-                foreach (array_slice($pastEvents, 0, 15) as $index => $event) {
-                    $eventDate = Carbon::parse($event->Date)->format('d M Y');
-                    $eventsList .= ($index + 1) . ". **{$event->ExponName}**\n";
-                    $eventsList .= "   - Date: {$eventDate}\n";
-                    $eventsList .= "   - Venue: {$event->VenueName}\n";
-                    $eventsList .= "   - Organizer: {$event->Orgname}\n\n";
+                $eventsList .= "\n═══════════════════════════════════════\n";
+                $eventsList .= "🔴 PAST EVENTS (" . count($pastEvents) . ") - For Reference\n";
+                $eventsList .= "═══════════════════════════════════════\n\n";
+                
+                foreach (array_slice($pastEvents, 0, 20) as $index => $event) {
+                    $eventsList .= $this->formatEventDetails($event, $index + 1, false);
                 }
             }
 
-            if (empty($eventsList)) {
-                return "No events currently in database. Please check our website for updates.";
-            }
+            $eventsList .= "\n═══════════════════════════════════════\n";
+            $eventsList .= "**INSTRUCTIONS FOR AI:**\n";
+            $eventsList .= "- When user asks about a specific event, provide ALL details above\n";
+            $eventsList .= "- When user asks about events in a city, filter by city/venue\n";
+            $eventsList .= "- When user asks for contact info, provide phone/email\n";
+            $eventsList .= "- When user asks about registration, provide the registration link\n";
+            $eventsList .= "- Be specific and detailed in your responses\n";
+            $eventsList .= "- Format dates in a user-friendly way\n";
+            $eventsList .= "═══════════════════════════════════════\n";
 
             return $eventsList;
 
@@ -226,6 +247,62 @@ Remember: You're here to help users discover and participate in trade fairs that
             Log::error('Error fetching events data: ' . $e->getMessage());
             return "Event data temporarily unavailable. Please visit our events page or contact support.";
         }
+    }
+
+    /**
+     * Format individual event details comprehensively
+     */
+    private function formatEventDetails($event, $number, $isUpcoming)
+    {
+        $eventDate = Carbon::parse($event->Date);
+        $formattedDate = $eventDate->format('d M Y (l)'); // e.g., "15 Jan 2026 (Wednesday)"
+        $daysUntil = $isUpcoming ? $eventDate->diffInDays(Carbon::now()) : null;
+        
+        $details = "【{$number}】 **{$event->ExponName}**\n";
+        $details .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+        
+        // Date and timing info
+        $details .= "📅 Date: {$formattedDate}\n";
+        if ($isUpcoming && $daysUntil !== null) {
+            $details .= "⏰ Time Until Event: {$daysUntil} days\n";
+        }
+        
+        // Location details
+        $details .= "📍 Venue: {$event->VenueName}\n";
+        if (!empty($event->city)) {
+            $details .= "🏙️ City: {$event->city}\n";
+        }
+        if (!empty($event->country)) {
+            $details .= "🌍 Country: {$event->country}\n";
+        }
+        if (!empty($event->hallno)) {
+            $details .= "🏢 Hall Number: {$event->hallno}\n";
+        }
+        
+        // Organizer info
+        $details .= "🏛️ Organizer: {$event->Orgname}\n";
+        
+        // Contact information
+        if (!empty($event->phone)) {
+            $details .= "📞 Phone: {$event->phone}\n";
+        }
+        if (!empty($event->email)) {
+            $details .= "📧 Email: {$event->email}\n";
+        }
+        
+        // Registration
+        if (!empty($event->reglink)) {
+            $details .= "🔗 Registration: {$event->reglink}\n";
+        }
+        
+        // Status
+        if (isset($event->status)) {
+            $details .= "✅ Status: {$event->status}\n";
+        }
+        
+        $details .= "\n";
+        
+        return $details;
     }
 
     /**
