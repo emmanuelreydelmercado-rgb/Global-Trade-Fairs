@@ -52,8 +52,32 @@ class ChatbotController extends Controller
             $history = $conversation->messages()
                 ->orderBy('created_at', 'asc')
                 ->take(10)
-                ->get()
-                ->map(function ($msg) {
+                ->get();
+
+            // GUEST RESTRICTION LOGIC
+            if (!auth()->check()) {
+                // Count how many questions the user has asked in this session (excluding current one)
+                $userMsgCount = $conversation->messages()
+                    ->where('role', 'user')
+                    ->where('id', '!=', $userMessage->id)
+                    ->count();
+
+                // If user has already asked 1 or more questions, block them
+                if ($userMsgCount >= 1) {
+                   
+                    // Delete the message they just tried to send (clean up)
+                    $userMessage->delete();
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => '🔒 <strong>Login Required</strong><br>You have reached the free question limit for guest users. Please login to continue chatting and ask unlimited questions.',
+                        'action' => 'login_required', // Frontend triggers login modal based on this
+                        'session_id' => $sessionId,
+                    ]);
+                }
+            }
+
+            $formattedHistory = $history->map(function ($msg) {
                     return [
                         'role' => $msg->role,
                         'message' => $msg->message,
@@ -64,7 +88,7 @@ class ChatbotController extends Controller
             // Generate AI response
             $aiResponse = $this->geminiService->generateResponse(
                 $request->message,
-                array_slice($history, 0, -1) // Exclude the current message
+                array_slice($formattedHistory, 0, -1) // Exclude the current message
             );
 
             // Save AI response

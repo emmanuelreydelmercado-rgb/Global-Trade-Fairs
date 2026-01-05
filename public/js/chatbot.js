@@ -89,7 +89,7 @@ class Chatbot {
         toggleBtn.addEventListener('click', () => this.toggleChat());
         closeBtn.addEventListener('click', () => this.closeChat());
         sendBtn.addEventListener('click', () => this.sendMessage());
-        
+
         input.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.sendMessage();
@@ -104,7 +104,7 @@ class Chatbot {
         this.isOpen = !this.isOpen;
         const container = document.getElementById('chatbot-container');
         const button = document.getElementById('chatbot-toggle');
-        
+
         if (this.isOpen) {
             container.classList.add('active');
             button.classList.add('active');
@@ -148,7 +148,7 @@ class Chatbot {
         try {
             const response = await fetch('/chatbot/quick-actions');
             const data = await response.json();
-            
+
             if (data.success) {
                 this.renderQuickActions(data.actions);
             }
@@ -222,7 +222,13 @@ class Chatbot {
                 // Add bot response to UI
                 this.addMessage('bot', data.message);
             } else {
-                this.addMessage('bot', 'Sorry, I encountered an error. Please try again.');
+                // Handle specific actions like login requirement
+                if (data.action === 'login_required') {
+                    const loginMsg = `${data.message}<br><br><a href="/login" class="chatbot-login-btn" style="background: #2563eb; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; display: inline-block;">Login to Continue</a>`;
+                    this.addMessage('bot', loginMsg);
+                } else {
+                    this.addMessage('bot', data.message || 'Sorry, I encountered an error. Please try again.');
+                }
             }
 
         } catch (error) {
@@ -237,9 +243,9 @@ class Chatbot {
      */
     addMessage(role, text) {
         const messagesContainer = document.getElementById('chatbot-messages');
-        const time = new Date().toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
+        const time = new Date().toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
         });
 
         const messageHTML = `
@@ -272,13 +278,13 @@ class Chatbot {
     formatMessage(text) {
         // Convert line breaks
         text = text.replace(/\n/g, '<br>');
-        
+
         // Convert URLs to links
         text = text.replace(
             /(https?:\/\/[^\s]+)/g,
             '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>'
         );
-        
+
         return text;
     }
 
@@ -288,7 +294,7 @@ class Chatbot {
     showTyping() {
         this.isTyping = true;
         const messagesContainer = document.getElementById('chatbot-messages');
-        
+
         const typingHTML = `
             <div class="message bot" id="typing-indicator">
                 <div class="message-avatar">🤖</div>
@@ -299,7 +305,7 @@ class Chatbot {
                 </div>
             </div>
         `;
-        
+
         messagesContainer.insertAdjacentHTML('beforeend', typingHTML);
         this.scrollToBottom();
     }
@@ -328,12 +334,12 @@ class Chatbot {
      */
     getOrCreateSessionId() {
         let sessionId = localStorage.getItem('chatbot_session_id');
-        
+
         if (!sessionId) {
             sessionId = this.generateUUID();
             localStorage.setItem('chatbot_session_id', sessionId);
         }
-        
+
         return sessionId;
     }
 
@@ -341,7 +347,7 @@ class Chatbot {
      * Generate UUID
      */
     generateUUID() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             const r = Math.random() * 16 | 0;
             const v = c === 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
