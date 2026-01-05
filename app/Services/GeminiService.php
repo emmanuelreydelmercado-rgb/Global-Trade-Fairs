@@ -135,11 +135,12 @@ class GeminiService
    - Includes: Full concierge service, premium accommodation, VIP event access, dedicated support
 
 **Your Capabilities:**
-1. Answer questions about upcoming trade fairs and events (use the real data above!)
+1. Answer questions about BOTH upcoming AND past trade fairs and events (use the real data above!)
 2. Explain our three package types and help users choose the right one
 3. Guide users through the registration and payment process
 4. Provide information about venues, dates, and event details from our database
 5. Help with general inquiries about trade fairs
+6. Share information about past events for reference and planning
 
 **Guidelines:**
 - Be friendly, professional, and concise
@@ -167,28 +168,56 @@ Remember: You're here to help users discover and participate in trade fairs that
     private function getEventsData()
     {
         try {
-            // Get upcoming events (future dates) and recent events
-            $events = DB::table('forms')
-                ->whereDate('Date', '>=', Carbon::now()->subDays(30))
-                ->orderBy('Date', 'asc')
-                ->limit(20)
+            // Get all events, ordered by date (most recent first)
+            $allEvents = DB::table('forms')
+                ->orderBy('Date', 'desc')
+                ->limit(50) // Increased limit to include more historical data
                 ->get();
 
-            if ($events->isEmpty()) {
+            if ($allEvents->isEmpty()) {
                 return "No events currently in database. Please check our website for updates.";
             }
 
-            $eventsList = "Here are our current trade fairs:\n\n";
+            // Separate upcoming and past events
+            $upcomingEvents = [];
+            $pastEvents = [];
             
-            foreach ($events as $index => $event) {
-                $eventDate = Carbon::parse($event->Date)->format('d M Y');
-                $isUpcoming = Carbon::parse($event->Date)->isFuture();
-                $status = $isUpcoming ? "🟢 Upcoming" : "🔴 Past";
-                
-                $eventsList .= ($index + 1) . ". **{$event->ExponName}**\n";
-                $eventsList .= "   - Date: {$eventDate} ({$status})\n";
-                $eventsList .= "   - Venue: {$event->VenueName}\n";
-                $eventsList .= "   - Organizer: {$event->Orgname}\n\n";
+            foreach ($allEvents as $event) {
+                if (Carbon::parse($event->Date)->isFuture()) {
+                    $upcomingEvents[] = $event;
+                } else {
+                    $pastEvents[] = $event;
+                }
+            }
+
+            $eventsList = "";
+
+            // Add upcoming events section
+            if (!empty($upcomingEvents)) {
+                $eventsList .= "**🟢 UPCOMING EVENTS:**\n\n";
+                foreach (array_slice($upcomingEvents, 0, 15) as $index => $event) {
+                    $eventDate = Carbon::parse($event->Date)->format('d M Y');
+                    $eventsList .= ($index + 1) . ". **{$event->ExponName}**\n";
+                    $eventsList .= "   - Date: {$eventDate}\n";
+                    $eventsList .= "   - Venue: {$event->VenueName}\n";
+                    $eventsList .= "   - Organizer: {$event->Orgname}\n\n";
+                }
+            }
+
+            // Add past events section
+            if (!empty($pastEvents)) {
+                $eventsList .= "\n**� PAST EVENTS (For Reference):**\n\n";
+                foreach (array_slice($pastEvents, 0, 15) as $index => $event) {
+                    $eventDate = Carbon::parse($event->Date)->format('d M Y');
+                    $eventsList .= ($index + 1) . ". **{$event->ExponName}**\n";
+                    $eventsList .= "   - Date: {$eventDate}\n";
+                    $eventsList .= "   - Venue: {$event->VenueName}\n";
+                    $eventsList .= "   - Organizer: {$event->Orgname}\n\n";
+                }
+            }
+
+            if (empty($eventsList)) {
+                return "No events currently in database. Please check our website for updates.";
             }
 
             return $eventsList;
