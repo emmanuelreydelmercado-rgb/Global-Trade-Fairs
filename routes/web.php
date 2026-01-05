@@ -185,6 +185,20 @@ Route::middleware(['auth', 'admin.email'])->group(function () {
 
 });
 
+/*
+|--------------------------------------------------------------------------
+| CHATBOT ROUTES
+|--------------------------------------------------------------------------
+*/
+use App\Http\Controllers\ChatbotController;
+
+Route::prefix('chatbot')->group(function () {
+    Route::post('/message', [ChatbotController::class, 'sendMessage'])->name('chatbot.message');
+    Route::get('/history', [ChatbotController::class, 'getHistory'])->name('chatbot.history');
+    Route::post('/end-session', [ChatbotController::class, 'endSession'])->name('chatbot.end');
+    Route::get('/quick-actions', [ChatbotController::class, 'getQuickActions'])->name('chatbot.actions');
+});
+
 require __DIR__.'/auth.php';
 
 /*

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Global Trade Fairs</title>
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
@@ -690,6 +691,9 @@ am5.ready(function () {
         padding-bottom: env(safe-area-inset-bottom, 12px);
     }
 </style>
+
+{{-- AI Chatbot Widget --}}
+@include('partials.chatbot')
 
 </body>
 </html>
