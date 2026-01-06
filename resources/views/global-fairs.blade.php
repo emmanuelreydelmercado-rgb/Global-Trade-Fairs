@@ -252,21 +252,25 @@
 
         @forelse($forms as $form)
         <div
-            x-data="{ x: 0, y: 0 }"
-            @mousemove="
-                // Disable tilt on mobile
-                if (window.innerWidth >= 1024) {
+            x-data="{ 
+                x: 0, 
+                y: 0,
+                baseTransform: '',
+                handleMove(e) {
+                    if (window.innerWidth < 1024) return;
                     const r = $el.getBoundingClientRect();
-                    x = ((event.clientX - r.left) / r.width - 0.5) * 10;
-                    y = ((event.clientY - r.top) / r.height - 0.5) * -10;
+                    this.x = ((e.clientX - r.left) / r.width - 0.5) * 10;
+                    this.y = ((e.clientY - r.top) / r.height - 0.5) * -10;
                 }
-            "
+            }"
+            @mousemove="handleMove($event)"
             @mouseleave="x = 0; y = 0"
             class="group bg-white rounded-xl border overflow-hidden flex flex-col
                    transition-all duration-300 ease-out
                    hover:-translate-y-2 hover:shadow-2xl
                    will-change-transform"
             :style="`transform: perspective(1000px) rotateX(${y}deg) rotateY(${x}deg)`"
+
         >
 
             <!-- IMAGE -->
