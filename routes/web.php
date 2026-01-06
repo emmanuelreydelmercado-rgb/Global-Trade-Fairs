@@ -199,6 +199,11 @@ Route::prefix('chatbot')->group(function () {
     Route::get('/quick-actions', [ChatbotController::class, 'getQuickActions'])->name('chatbot.actions');
 });
 
+// DEBUG: Profile picture diagnostic (remove after fixing)
+Route::get('/debug-profile', function() {
+    return view('debug-profile');
+})->middleware('auth');
+
 require __DIR__.'/auth.php';
 
 /*
