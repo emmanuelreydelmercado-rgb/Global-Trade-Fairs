@@ -41,7 +41,31 @@ class ChatbotController extends Controller
                 ]
             );
 
-            // Save user message
+            // GUEST RESTRICTION LOGIC - Check BEFORE saving the message
+            if (!auth()->check()) {
+                // Count how many questions the guest has ALREADY asked
+                $previousQuestionsCount = $conversation->messages()
+                    ->where('role', 'user')
+                    ->count();
+
+                Log::info('Guest chatbot access', [
+                    'session_id' => $sessionId,
+                    'previous_questions' => $previousQuestionsCount,
+                    'limit' => 2
+                ]);
+
+                // If they've already asked 2 questions, block the 3rd
+                if ($previousQuestionsCount >= 2) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => '🔒 <strong>Login Required</strong><br>You have reached your free question limit (2 questions). Please login to continue chatting and ask unlimited questions.',
+                        'action' => 'login_required',
+                        'session_id' => $sessionId,
+                    ]);
+                }
+            }
+
+            // Save user message (AFTER checking the limit)
             $userMessage = ChatMessage::create([
                 'conversation_id' => $conversation->id,
                 'role' => 'user',
@@ -53,29 +77,6 @@ class ChatbotController extends Controller
                 ->orderBy('created_at', 'asc')
                 ->take(10)
                 ->get();
-
-            // GUEST RESTRICTION LOGIC
-            if (!auth()->check()) {
-                // Count how many questions the user has asked in this session (excluding current one)
-                $userMsgCount = $conversation->messages()
-                    ->where('role', 'user')
-                    ->where('id', '!=', $userMessage->id)
-                    ->count();
-
-                // If user has already asked 2 or more questions, block them
-                if ($userMsgCount >= 2) {
-                   
-                    // Delete the message they just tried to send (clean up)
-                    $userMessage->delete();
-
-                    return response()->json([
-                        'success' => false,
-                        'message' => '🔒 <strong>Login Required</strong><br>You have reached the free question limit for guest users. Please login to continue chatting and ask unlimited questions.',
-                        'action' => 'login_required', // Frontend triggers login modal based on this
-                        'session_id' => $sessionId,
-                    ]);
-                }
-            }
 
             $formattedHistory = $history->map(function ($msg) {
                     return [
