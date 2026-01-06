@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class GeminiService
+class AiChatService
 {
     private $client;
     private $apiKey;
@@ -17,120 +17,81 @@ class GeminiService
     public function __construct()
     {
         $this->client = new Client();
-        $this->apiKey = config('services.gemini.api_key');
-        $this->model = config('services.gemini.model', 'gemini-2.5-flash');
-        $this->apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent";
+        $this->apiKey = env('GROQ_API_KEY');
+        $this->model = env('GROQ_MODEL', 'llama-3.3-70b-versatile'); // Updated model
+        $this->apiUrl = "https://api.groq.com/openai/v1/chat/completions";
     }
 
-    /**
-     * Generate AI response from user message
-     */
     public function generateResponse($userMessage, $conversationHistory = [])
     {
-        $apiKeys = $this->getApiKeys();
-        $lastException = null;
-        
-        // Try each API key until one works
-        foreach ($apiKeys as $index => $apiKey) {
-            try {
-                Log::info("Trying Gemini API key #" . ($index + 1));
-                
-                $systemPrompt = $this->getSystemPrompt();
-                
-                // Build the conversation context
-                $contents = $this->buildContents($systemPrompt, $conversationHistory, $userMessage);
+        try {
+            // Handle greetings directly (prevent hallucinations)
+            $lowerMessage = strtolower(trim($userMessage));
+            $greetings = ['hi', 'hello', 'hey', 'ok', 'okay', 'hola', 'namaste'];
+            
+            if (in_array($lowerMessage, $greetings) || strlen($lowerMessage) <= 3) {
+                return "👋 Welcome to **Global Trade Fairs**! 
 
-                // Make API request to Gemini
-                $response = $this->client->post($this->apiUrl, [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                        'x-goog-api-key' => $apiKey,
-                    ],
-                    'json' => [
-                        'contents' => $contents,
-                        'generationConfig' => [
-                            'temperature' => 0.7,
-                            'topK' => 40,
-                            'topP' => 0.95,
-                            'maxOutputTokens' => 1024,
-                        ],
-                    ],
-                ]);
+I'm your AI assistant, here to help you discover trade fairs and events worldwide. 🌍
 
-                $data = json_decode($response->getBody(), true);
-                
-                // Extract the generated text
-                if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-                    Log::info("Gemini API key #" . ($index + 1) . " succeeded");
-                    return $data['candidates'][0]['content']['parts'][0]['text'];
-                }
+**I can help you with:**
+📅 Upcoming and past events
+🏙️ Events by city or country
+💼 Package information (Basic, Pro, Expert)
+📞 Contact details for organizers
+🔗 Registration links
 
-                return "I'm sorry, I couldn't generate a response. Please try again.";
+**Try asking:**
+- 'What events are happening in Mumbai?'
+- 'Tell me about Tech Expo 2025'
+- 'What packages do you offer?'
 
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
-                $statusCode = $e->hasResponse() ? $e->getResponse()->getStatusCode() : 'N/A';
-                
-                // If 429 (rate limit), try next key
-                if ($statusCode == 429) {
-                    Log::warning("API key #" . ($index + 1) . " hit rate limit, trying next key");
-                    $lastException = $e;
-                    continue; // Try next key
-                }
-                
-                // For other errors, log and try next key
-                $responseBody = $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : 'No response';
-                
-                Log::error('Gemini API Request Failed', [
-                    'key_number' => $index + 1,
-                    'status_code' => $statusCode,
-                    'api_url' => $this->apiUrl,
+How can I assist you today? 😊";
+            }
+            
+            $systemPrompt = $this->getSystemPrompt();
+            
+            // Build messages array (OpenAI format)
+            $messages = [
+                ['role' => 'system', 'content' => $systemPrompt]
+            ];
+            
+            // Add history
+            foreach ($conversationHistory as $msg) {
+                $messages[] = [
+                    'role' => $msg['role'] === 'user' ? 'user' : 'assistant',
+                    'content' => $msg['message']
+                ];
+            }
+            
+            // Add current message
+            $messages[] = ['role' => 'user', 'content' => $userMessage];
+
+            $response = $this->client->post($this->apiUrl, [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                ],
+                'json' => [
                     'model' => $this->model,
-                    'response' => $responseBody
-                ]);
-                
-                $lastException = $e;
-                continue; // Try next key
-                
-            } catch (\Exception $e) {
-                Log::error('Gemini Service Error', [
-                    'key_number' => $index + 1,
-                    'message' => $e->getMessage(),
-                    'api_url' => $this->apiUrl
-                ]);
-                
-                $lastException = $e;
-                continue; // Try next key
+                    'messages' => $messages,
+                    'temperature' => 0.1,
+                    'max_tokens' => 1024,
+                ],
+            ]);
+
+            $data = json_decode($response->getBody(), true);
+            
+            if (isset($data['choices'][0]['message']['content'])) {
+                return $data['choices'][0]['message']['content'];
             }
+            
+            return "I messed up the response parsing. Check logs.";
+
+        } catch (\Exception $e) {
+            Log::error("Groq API Error: " . $e->getMessage());
+            return "Technical difficulties with Groq AI. Please check logs.";
         }
-        
-        // All keys failed
-        if ($lastException) {
-            throw new \Exception("All API keys exhausted. Last error: " . $lastException->getMessage());
-        }
-        
-        throw new \Exception("No API keys configured");
-    }
-    
-    /**
-     * Get all configured API keys
-     */
-    private function getApiKeys()
-    {
-        $keys = [];
-        
-        // Primary key
-        if ($primary = config('services.gemini.api_key')) {
-            $keys[] = $primary;
-        }
-        
-        // Secondary keys (GEMINI_API_KEY_2, GEMINI_API_KEY_3, etc.)
-        for ($i = 2; $i <= 5; $i++) {
-            if ($key = config("services.gemini.api_key_$i")) {
-                $keys[] = $key;
-            }
-        }
-        
-        return $keys;
     }
 
     /**
@@ -211,6 +172,10 @@ class GeminiService
 **Guidelines:**
 - Be friendly, professional, and helpful
 - Use emojis to make responses engaging (📅 🌍 💼 ✨)
+- **Grammar Rules:**
+  - Say 'held at [VenueName]' NOT 'held at the [VenueName]' (e.g., 'held at Marina Trench' not 'held at the Marina Trench')
+  - Use proper English grammar and sentence structure
+  - Keep responses natural and conversational
 - **Context Handling:**
   - If user asks for 'details' or 'info' about an event → Provide **FULL** details (Date, Venue, Organizer, Contacts, etc.)
   - If user asks a **specific question** (e.g., 'What is the date?', 'Where is it?') → Answer **ONLY** that specific question directly. Don't dump entire event info.
@@ -258,61 +223,32 @@ Remember: You're here to help users discover and participate in trade fairs! ALW
                 return "No approved events currently in database. Please check our website for updates.";
             }
 
-            // Separate upcoming and past events
-            $upcomingEvents = [];
-            $pastEvents = [];
+            $eventsList = "CURRENT SYSTEM DATE: " . Carbon::now()->format('d M Y') . "\n";
+            $eventsList .= "**INTERNAL EVENT DATABASE (Sorted by Date DESC):**\n\n";
             
-            foreach ($allEvents as $event) {
+            foreach ($allEvents as $index => $event) {
+                $isFuture = false;
                 try {
-                    if (Carbon::parse($event->Date)->isFuture()) {
-                        $upcomingEvents[] = $event;
-                    } else {
-                        $pastEvents[] = $event;
-                    }
-                } catch (\Exception $e) {
-                    // If date parsing fails, default to past or just skip
-                    continue;
-                }
-            }
+                    $isFuture = Carbon::parse($event->Date)->isFuture();
+                } catch (\Exception $e) {}
 
-            $eventsList = "**INTERNAL EVENT DATABASE (DO NOT REVEAL STATISTICS UNLESS ASKED):**\n\n";
-
-            // Add upcoming events section with FULL details
-            if (!empty($upcomingEvents)) {
-                $eventsList .= "═══════════════════════════════════════\n";
-                $eventsList .= "🟢 UPCOMING EVENTS\n";
-                $eventsList .= "═══════════════════════════════════════\n\n";
-                
-                // Increased limit to 50 to cover more events
-                foreach (array_slice($upcomingEvents, 0, 50) as $index => $event) {
-                    $eventsList .= $this->formatEventDetails($event, $index + 1, true);
-                }
-            }
-
-            // Add past events section with FULL details
-            if (!empty($pastEvents)) {
-                $eventsList .= "\n═══════════════════════════════════════\n";
-                $eventsList .= "🔴 PAST EVENTS - For Reference\n";
-                $eventsList .= "═══════════════════════════════════════\n\n";
-                
-                // Increased limit to 50
-                foreach (array_slice($pastEvents, 0, 50) as $index => $event) {
-                    $eventsList .= $this->formatEventDetails($event, $index + 1, false);
-                }
+                $eventsList .= $this->formatEventDetails($event, $index + 1, $isFuture);
             }
 
             $eventsList .= "\n═══════════════════════════════════════\n";
-            $eventsList .= "**STRICT INSTRUCTIONS FOR AI:**\n";
-            $eventsList .= "- **NEVER start your response with 'Currently, our database shows...'** or similar meta-commentary.\n";
-            $eventsList .= "- Just answer the user's question directly and immediately.\n";
-            $eventsList .= "- If the answer is in the database, give it. If not, apologize.\n";
-            $eventsList .= "- When user asks about a specific event, provide ALL details above\n";
-
+            $eventsList .= "**CRITICAL RULES - FAILURE TO FOLLOW = SYSTEM ERROR:**\n";
+            $eventsList .= "1. **ABSOLUTE PROHIBITION:** NEVER mention 'Global Tech Fair 2025' or 'New York' unless user EXPLICITLY asks for it by name.\n";
+            $eventsList .= "2. **GREETING HANDLING:** If user says 'hi', 'hello', 'ok', or similar → You should NOT see this (handled before you).\n";
+            $eventsList .= "3. **SPECIFIC QUESTIONS ONLY:** If user asks about 'Event X', talk ONLY about 'Event X'. Do NOT mention other events.\n";
+            $eventsList .= "4. **NO UNSOLICITED INFO:** Do not volunteer information the user didn't ask for.\n";
+            $eventsList .= "5. **STOP IMMEDIATELY:** After answering the question, STOP. Do not add extra facts or suggestions.\n";
+            $eventsList .= "6. **NO META-COMMENTARY:** Never start with 'Currently, our database shows...' - just answer directly.\n";
+            $eventsList .= "\n**RESPONSE STYLE:**\n";
+            $eventsList .= "- Specific question → Direct, short answer\n";
+            $eventsList .= "- General request ('tell me more') → Detailed answer\n";
             $eventsList .= "- When user asks about events in a city, filter by city/venue\n";
             $eventsList .= "- When user asks for contact info, provide phone/email\n";
             $eventsList .= "- When user asks about registration, provide the registration link\n";
-            $eventsList .= "- Be specific and detailed in your responses\n";
-            $eventsList .= "- Format dates in a user-friendly way\n";
             $eventsList .= "═══════════════════════════════════════\n";
 
             return $eventsList;
@@ -330,9 +266,10 @@ Remember: You're here to help users discover and participate in trade fairs! ALW
     {
         $eventDate = Carbon::parse($event->Date);
         $formattedDate = $eventDate->format('d M Y (l)'); // e.g., "15 Jan 2026 (Wednesday)"
-        $daysUntil = $isUpcoming ? $eventDate->diffInDays(Carbon::now()) : null;
+        $daysUntil = $isUpcoming ? abs(Carbon::now()->diffInDays($eventDate)) : null;
         
-        $details = "【{$number}】 **{$event->ExponName}**\n";
+        $statusLabel = $isUpcoming ? "🟢 [UPCOMING]" : "🔴 [PAST]";
+        $details = "【{$number}】 {$statusLabel} **{$event->ExponName}**\n";
         $details .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
         
         // Date and timing info

@@ -4,18 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\ChatConversation;
 use App\Models\ChatMessage;
-use App\Services\GeminiService;
+use App\Services\AiChatService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
 class ChatbotController extends Controller
 {
-    protected $geminiService;
+    protected $aiChatService;
 
-    public function __construct(GeminiService $geminiService)
+    public function __construct(AiChatService $aiChatService)
     {
-        $this->geminiService = $geminiService;
+        $this->aiChatService = $aiChatService;
     }
 
     /**
@@ -86,7 +86,7 @@ class ChatbotController extends Controller
                 ->toArray();
 
             // Generate AI response
-            $aiResponse = $this->geminiService->generateResponse(
+            $aiResponse = $this->aiChatService->generateResponse(
                 $request->message,
                 array_slice($formattedHistory, 0, -1) // Exclude the current message
             );
