@@ -17,8 +17,8 @@ class AiChatService
     public function __construct()
     {
         $this->client = new Client();
-        $this->apiKey = env('GROQ_API_KEY');
-        $this->model = env('GROQ_MODEL', 'llama-3.3-70b-versatile'); // Updated model
+        $this->apiKey = config('services.groq.api_key'); // Use config for production
+        $this->model = config('services.groq.model', 'llama-3.3-70b-versatile');
         $this->apiUrl = "https://api.groq.com/openai/v1/chat/completions";
     }
 
