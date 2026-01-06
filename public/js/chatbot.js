@@ -26,6 +26,11 @@ class Chatbot {
      * Create chatbot HTML structure
      */
     createChatbotHTML() {
+        // If already exists (from Blade), don't recreate
+        if (document.getElementById('chatbot-toggle')) {
+            return;
+        }
+
         const chatbotHTML = `
             <!-- Chatbot Button -->
             <button class="chatbot-button" id="chatbot-toggle">
