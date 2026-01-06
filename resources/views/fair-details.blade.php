@@ -268,70 +268,8 @@
 </main>
 
 <!-- ================= MOBILE APP NAVIGATION ================= -->
-<div class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-lg border-t border-gray-200 z-[100] grid grid-cols-3 gap-1 px-2 py-3 md:hidden shadow-[0_-5px_20px_rgba(0,0,0,0.05)] pb-safe">
-    
-    <a href="{{ route('home') }}" class="flex flex-col items-center justify-center gap-1 group">
-        <div class="p-1 rounded-xl transition-all duration-300 {{ request()->routeIs('home') ? 'bg-primary/10 text-primary' : 'text-gray-400 group-hover:text-gray-600' }}">
-            <span class="material-icons text-2xl transition-transform group-active:scale-90">home</span>
-        </div>
-        <span class="text-[10px] font-semibold {{ request()->routeIs('home') ? 'text-primary' : 'text-gray-400' }}">Home</span>
-    </a>
+@include('partials.mobile-nav')
 
-    <a href="{{ route('tour.packages') }}" class="flex flex-col items-center justify-center gap-1 group">
-        <div class="p-1 rounded-xl transition-all duration-300 {{ request()->routeIs('tour.packages') ? 'bg-primary/10 text-primary' : 'text-gray-400 group-hover:text-gray-600' }}">
-            <span class="material-icons text-2xl transition-transform group-active:scale-90">flight</span>
-        </div>
-        <span class="text-[10px] font-semibold {{ request()->routeIs('tour.packages') ? 'text-primary' : 'text-gray-400' }}">Tours</span>
-    </a>
-
-    @auth
-        <div class="relative flex flex-col items-center justify-center gap-1" x-data="{ open: false }">
-            <button @click="open = !open" class="flex flex-col items-center justify-center gap-1 group w-full">
-                <div class="p-0.5 rounded-full border-2 transition-all duration-300 {{ Auth::check() ? 'border-primary' : 'border-transparent' }}">
-                     <img src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg') ? asset('profilepics/' . auth()->user()->profilepic) : asset('profilepics/user_avatar.png') }}" 
-                         class="w-6 h-6 rounded-full object-cover">
-                </div>
-                <span class="text-[10px] font-semibold text-gray-400">Profile</span>
-            </button>
-
-            <!-- Popover Menu -->
-            <div x-show="open" 
-                 @click.outside="open = false" 
-                 class="absolute bottom-20 right-2 w-56 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden transform origin-bottom-right"
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 scale-95 translate-y-2"
-                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                 x-transition:leave-end="opacity-0 scale-95 translate-y-2"
-                 style="display: none;">
-                 
-                 <div class="p-4 bg-gray-50 border-b">
-                    <p class="text-sm font-bold text-gray-900 truncate">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
-                 </div>
-                 
-                 <div class="p-2">
-                     <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 text-red-600 text-sm font-medium hover:bg-red-50 rounded-xl transition-colors">
-                            <span class="material-icons text-[18px]">logout</span>
-                            Sign Out
-                        </button>
-                    </form>
-                 </div>
-            </div>
-        </div>
-    @else
-        <a href="{{ route('login') }}" class="flex flex-col items-center justify-center gap-1 group">
-            <div class="p-1 rounded-xl transition-all duration-300 text-gray-400 group-hover:text-gray-600">
-                <span class="material-icons text-2xl transition-transform group-active:scale-90">account_circle</span>
-            </div>
-            <span class="text-[10px] font-semibold text-gray-400">Login</span>
-        </a>
-    @endauth
-
-</div>
 
 <style>
     /* Safe area padding for iPhones with home indicator */

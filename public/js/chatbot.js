@@ -280,14 +280,15 @@ class Chatbot {
     getAvatarHTML(role) {
         if (role === 'bot') {
             const logo = window.chatbotConfig?.botLogo || '/images/email-logo.png';
-            return `<img src="${logo}" alt="Bot" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
+            return `<img src="${logo}" onerror="this.src='/images/email-logo.png'" alt="Bot" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
         } else {
             // User
             const avatar = window.chatbotConfig?.userAvatar;
             if (avatar) {
-                return `<img src="${avatar}" alt="User" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
+                // Fallback to emoji/default if image fails
+                return `<img src="${avatar}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" alt="User" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"> <div style="display:none; width: 24px; height: 24px; border-radius: 50%; background: #ddd; align-items: center; justify-content: center;">👤</div>`;
             }
-            return '👤';
+            return '<div style="width: 24px; height: 24px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center;">👤</div>';
         }
     }
 
@@ -295,6 +296,15 @@ class Chatbot {
      * Format message text (convert line breaks, links, etc.)
      */
     formatMessage(text) {
+        // Bold: **text** -> <b>text</b>
+        text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+        // Italic: *text* -> <i>text</i>
+        text = text.replace(/\*(.*?)\*/g, '<i>$1</i>');
+
+        // Bullet points
+        text = text.replace(/^\s*[\-\*]\s+(.*)$/gm, '• $1');
+
         // Convert line breaks
         text = text.replace(/\n/g, '<br>');
 

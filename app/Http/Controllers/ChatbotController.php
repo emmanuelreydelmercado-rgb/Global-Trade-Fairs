@@ -62,8 +62,8 @@ class ChatbotController extends Controller
                     ->where('id', '!=', $userMessage->id)
                     ->count();
 
-                // If user has already asked 1 or more questions, block them
-                if ($userMsgCount >= 1) {
+                // If user has already asked 2 or more questions, block them
+                if ($userMsgCount >= 2) {
                    
                     // Delete the message they just tried to send (clean up)
                     $userMessage->delete();

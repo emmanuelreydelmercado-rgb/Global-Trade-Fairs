@@ -58,6 +58,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -95,8 +96,15 @@
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }
 
 .chatbot-close {
@@ -151,6 +159,7 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -182,11 +191,22 @@
     color: white;
 }
 
-.message-bubble {
+.message>div:not(.message-avatar) {
     max-width: 75%;
+    display: flex;
+    flex-direction: column;
+}
+
+.message.user>div:not(.message-avatar) {
+    align-items: flex-end;
+}
+
+.message-bubble {
+    width: fit-content;
     padding: 12px 16px;
     border-radius: 16px;
-    word-wrap: break-word;
+    word-break: break-word;
+    /* Ensure long words break */
     line-height: 1.5;
     font-size: 14px;
 }
@@ -202,6 +222,8 @@
     background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
     color: white;
     border-bottom-right-radius: 4px;
+    text-align: left;
+    /* Keep text left aligned even if bubble is right aligned */
 }
 
 .message-time {
@@ -245,9 +267,13 @@
 }
 
 @keyframes typing {
-    0%, 60%, 100% {
+
+    0%,
+    60%,
+    100% {
         transform: translateY(0);
     }
+
     30% {
         transform: translateY(-10px);
     }
@@ -336,7 +362,7 @@
         right: 20px;
         left: 20px;
     }
-    
+
     .chatbot-button {
         bottom: 15px;
         right: 15px;
