@@ -18,6 +18,7 @@
 
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -269,6 +270,10 @@
 
 <!-- ================= MOBILE APP NAVIGATION ================= -->
 @include('partials.mobile-nav')
+
+{{-- AI Chatbot Widget --}}
+@include('partials.chatbot')
+
 
 
 <style>

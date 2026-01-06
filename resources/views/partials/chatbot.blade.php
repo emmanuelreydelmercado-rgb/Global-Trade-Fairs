@@ -1,7 +1,7 @@
 {{-- Chatbot Widget Include --}}
 {{-- Add this file to any blade template where you want the chatbot to appear --}}
 
-@if(config('services.gemini.api_key'))
+
     {{-- Chatbot CSS --}}
     <link rel="stylesheet" href="{{ asset('css/chatbot.css') }}?v=2.1">
 
@@ -13,7 +13,7 @@
         </button>
 
         <!-- Chatbot Container -->
-        <div class="chatbot-container" id="chatbot-container" style="display: none;">
+        <div class="chatbot-container" id="chatbot-container">
             <!-- Header -->
             <div class="chatbot-header">
                 <div class="chatbot-header-title">
@@ -56,4 +56,4 @@
         };
     </script>
     <script src="{{ asset('js/chatbot.js') }}?v=2.1" defer></script>
-@endif
+

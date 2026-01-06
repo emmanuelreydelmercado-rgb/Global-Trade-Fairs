@@ -24,6 +24,7 @@
     
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: { primary: "#1a73e8" },

@@ -247,15 +247,15 @@ Remember: You're here to help users discover and participate in trade fairs! ALW
     private function getEventsData()
     {
         try {
-            // Get all events with ALL fields, ordered by date (most recent first)
+            // Get approved events with ALL fields, ordered by date (most recent first)
             $allEvents = DB::table('forms')
-                ->select('*')
+                ->where('status', 'approved')
                 ->orderBy('Date', 'desc')
-                ->limit(50)
+                ->limit(200)
                 ->get();
 
             if ($allEvents->isEmpty()) {
-                return "No events currently in database. Please check our website for updates.";
+                return "No approved events currently in database. Please check our website for updates.";
             }
 
             // Separate upcoming and past events
@@ -263,15 +263,20 @@ Remember: You're here to help users discover and participate in trade fairs! ALW
             $pastEvents = [];
             
             foreach ($allEvents as $event) {
-                if (Carbon::parse($event->Date)->isFuture()) {
-                    $upcomingEvents[] = $event;
-                } else {
-                    $pastEvents[] = $event;
+                try {
+                    if (Carbon::parse($event->Date)->isFuture()) {
+                        $upcomingEvents[] = $event;
+                    } else {
+                        $pastEvents[] = $event;
+                    }
+                } catch (\Exception $e) {
+                    // If date parsing fails, default to past or just skip
+                    continue;
                 }
             }
 
             $eventsList = "**COMPLETE EVENT DATABASE:**\n\n";
-            $eventsList .= "Total Events: " . count($allEvents) . " (Upcoming: " . count($upcomingEvents) . ", Past: " . count($pastEvents) . ")\n\n";
+            $eventsList .= "Total Approved Events: " . count($allEvents) . " (Upcoming: " . count($upcomingEvents) . ", Past: " . count($pastEvents) . ")\n\n";
 
             // Add upcoming events section with FULL details
             if (!empty($upcomingEvents)) {
@@ -279,7 +284,8 @@ Remember: You're here to help users discover and participate in trade fairs! ALW
                 $eventsList .= "🟢 UPCOMING EVENTS (" . count($upcomingEvents) . ")\n";
                 $eventsList .= "═══════════════════════════════════════\n\n";
                 
-                foreach (array_slice($upcomingEvents, 0, 20) as $index => $event) {
+                // Increased limit to 50 to cover more events
+                foreach (array_slice($upcomingEvents, 0, 50) as $index => $event) {
                     $eventsList .= $this->formatEventDetails($event, $index + 1, true);
                 }
             }
@@ -290,7 +296,8 @@ Remember: You're here to help users discover and participate in trade fairs! ALW
                 $eventsList .= "🔴 PAST EVENTS (" . count($pastEvents) . ") - For Reference\n";
                 $eventsList .= "═══════════════════════════════════════\n\n";
                 
-                foreach (array_slice($pastEvents, 0, 20) as $index => $event) {
+                // Increased limit to 50
+                foreach (array_slice($pastEvents, 0, 50) as $index => $event) {
                     $eventsList .= $this->formatEventDetails($event, $index + 1, false);
                 }
             }
