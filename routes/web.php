@@ -226,6 +226,27 @@ Route::get('/test-chatbot', function() {
     ]);
 });
 
+// DEBUG: Test actual Gemini API call
+Route::get('/test-gemini-api', function() {
+    try {
+        $gemini = app(\App\Services\GeminiService::class);
+        $response = $gemini->generateResponse("Hello, are you working?", []);
+        
+        return response()->json([
+            'status' => 'SUCCESS',
+            'response' => $response
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'ERROR',
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => explode("\n", $e->getTraceAsString())
+        ], 500);
+    }
+});
+
 require __DIR__.'/auth.php';
 
 /*
