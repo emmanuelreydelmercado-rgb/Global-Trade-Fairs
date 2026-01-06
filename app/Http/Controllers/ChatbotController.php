@@ -43,19 +43,18 @@ class ChatbotController extends Controller
 
             // GUEST RESTRICTION LOGIC - Check BEFORE saving the message
             if (!auth()->check()) {
-                // Count how many questions the guest has ALREADY asked
-                $previousQuestionsCount = $conversation->messages()
+                // Count how many USER messages (questions) the guest has ALREADY asked
+                $previousQuestionsCount = ChatMessage::where('conversation_id', $conversation->id)
                     ->where('role', 'user')
                     ->count();
 
-                Log::info('Guest chatbot access', [
-                    'session_id' => $sessionId,
-                    'previous_questions' => $previousQuestionsCount,
-                    'limit' => 2
-                ]);
-
                 // If they've already asked 2 questions, block the 3rd
                 if ($previousQuestionsCount >= 2) {
+                    Log::info('Guest blocked: exceeded question limit', [
+                        'session_id' => $sessionId,
+                        'count' => $previousQuestionsCount
+                    ]);
+                    
                     return response()->json([
                         'success' => false,
                         'message' => '🔒 <strong>Login Required</strong><br>You have reached your free question limit (2 questions). Please login to continue chatting and ask unlimited questions.',
@@ -110,13 +109,25 @@ class ChatbotController extends Controller
                 'timestamp' => now()->toIso8601String(),
             ]);
 
+
         } catch (\Exception $e) {
-            Log::error('Chatbot Error: ' . $e->getMessage());
+            Log::error('Chatbot Error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'session_id' => $sessionId ?? 'unknown',
+                'user_id' => auth()->id() ?? 'guest'
+            ]);
             
             return response()->json([
                 'success' => false,
-                'message' => 'Sorry, I encountered an error. Please try again or contact support@globaltradefairs.com',
+                'message' => 'I\'m experiencing technical difficulties. Please try again later or contact support at support@globaltradefairs.com',
                 'error' => config('app.debug') ? $e->getMessage() : null,
+                'debug' => config('app.debug') ? [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ] : null
             ], 500);
         }
     }

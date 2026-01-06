@@ -59,9 +59,26 @@ class GeminiService
 
             return "I'm sorry, I couldn't generate a response. Please try again.";
 
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $statusCode = $e->hasResponse() ? $e->getResponse()->getStatusCode() : 'N/A';
+            $responseBody = $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : 'No response';
+            
+            Log::error('Gemini API Request Failed', [
+                'status_code' => $statusCode,
+                'api_url' => $this->apiUrl,
+                'model' => $this->model,
+                'response' => $responseBody
+            ]);
+            
+            throw new \Exception("Gemini API Error (HTTP $statusCode)");
+            
         } catch (\Exception $e) {
-            Log::error('Gemini API Error: ' . $e->getMessage());
-            return "I'm experiencing technical difficulties. Please try again later or contact support at support@globaltradefairs.com";
+            Log::error('Gemini Service Error', [
+                'message' => $e->getMessage(),
+                'api_url' => $this->apiUrl
+            ]);
+            
+            throw $e;
         }
     }
 
