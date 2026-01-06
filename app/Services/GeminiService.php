@@ -27,59 +27,110 @@ class GeminiService
      */
     public function generateResponse($userMessage, $conversationHistory = [])
     {
-        try {
-            $systemPrompt = $this->getSystemPrompt();
-            
-            // Build the conversation context
-            $contents = $this->buildContents($systemPrompt, $conversationHistory, $userMessage);
+        $apiKeys = $this->getApiKeys();
+        $lastException = null;
+        
+        // Try each API key until one works
+        foreach ($apiKeys as $index => $apiKey) {
+            try {
+                Log::info("Trying Gemini API key #" . ($index + 1));
+                
+                $systemPrompt = $this->getSystemPrompt();
+                
+                // Build the conversation context
+                $contents = $this->buildContents($systemPrompt, $conversationHistory, $userMessage);
 
-            // Make API request to Gemini
-            $response = $this->client->post($this->apiUrl, [
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'x-goog-api-key' => $this->apiKey,
-                ],
-                'json' => [
-                    'contents' => $contents,
-                    'generationConfig' => [
-                        'temperature' => 0.7,
-                        'topK' => 40,
-                        'topP' => 0.95,
-                        'maxOutputTokens' => 1024,
+                // Make API request to Gemini
+                $response = $this->client->post($this->apiUrl, [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'x-goog-api-key' => $apiKey,
                     ],
-                ],
-            ]);
+                    'json' => [
+                        'contents' => $contents,
+                        'generationConfig' => [
+                            'temperature' => 0.7,
+                            'topK' => 40,
+                            'topP' => 0.95,
+                            'maxOutputTokens' => 1024,
+                        ],
+                    ],
+                ]);
 
-            $data = json_decode($response->getBody(), true);
-            
-            // Extract the generated text
-            if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
-                return $data['candidates'][0]['content']['parts'][0]['text'];
+                $data = json_decode($response->getBody(), true);
+                
+                // Extract the generated text
+                if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+                    Log::info("Gemini API key #" . ($index + 1) . " succeeded");
+                    return $data['candidates'][0]['content']['parts'][0]['text'];
+                }
+
+                return "I'm sorry, I couldn't generate a response. Please try again.";
+
+            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                $statusCode = $e->hasResponse() ? $e->getResponse()->getStatusCode() : 'N/A';
+                
+                // If 429 (rate limit), try next key
+                if ($statusCode == 429) {
+                    Log::warning("API key #" . ($index + 1) . " hit rate limit, trying next key");
+                    $lastException = $e;
+                    continue; // Try next key
+                }
+                
+                // For other errors, log and try next key
+                $responseBody = $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : 'No response';
+                
+                Log::error('Gemini API Request Failed', [
+                    'key_number' => $index + 1,
+                    'status_code' => $statusCode,
+                    'api_url' => $this->apiUrl,
+                    'model' => $this->model,
+                    'response' => $responseBody
+                ]);
+                
+                $lastException = $e;
+                continue; // Try next key
+                
+            } catch (\Exception $e) {
+                Log::error('Gemini Service Error', [
+                    'key_number' => $index + 1,
+                    'message' => $e->getMessage(),
+                    'api_url' => $this->apiUrl
+                ]);
+                
+                $lastException = $e;
+                continue; // Try next key
             }
-
-            return "I'm sorry, I couldn't generate a response. Please try again.";
-
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $statusCode = $e->hasResponse() ? $e->getResponse()->getStatusCode() : 'N/A';
-            $responseBody = $e->hasResponse() ? $e->getResponse()->getBody()->getContents() : 'No response';
-            
-            Log::error('Gemini API Request Failed', [
-                'status_code' => $statusCode,
-                'api_url' => $this->apiUrl,
-                'model' => $this->model,
-                'response' => $responseBody
-            ]);
-            
-            throw new \Exception("Gemini API Error (HTTP $statusCode)");
-            
-        } catch (\Exception $e) {
-            Log::error('Gemini Service Error', [
-                'message' => $e->getMessage(),
-                'api_url' => $this->apiUrl
-            ]);
-            
-            throw $e;
         }
+        
+        // All keys failed
+        if ($lastException) {
+            throw new \Exception("All API keys exhausted. Last error: " . $lastException->getMessage());
+        }
+        
+        throw new \Exception("No API keys configured");
+    }
+    
+    /**
+     * Get all configured API keys
+     */
+    private function getApiKeys()
+    {
+        $keys = [];
+        
+        // Primary key
+        if ($primary = config('services.gemini.api_key')) {
+            $keys[] = $primary;
+        }
+        
+        // Secondary keys (GEMINI_API_KEY_2, GEMINI_API_KEY_3, etc.)
+        for ($i = 2; $i <= 5; $i++) {
+            if ($key = config("services.gemini.api_key_$i")) {
+                $keys[] = $key;
+            }
+        }
+        
+        return $keys;
     }
 
     /**
