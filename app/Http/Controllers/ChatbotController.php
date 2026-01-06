@@ -98,14 +98,10 @@ class ChatbotController extends Controller
                 'message' => $aiResponse,
             ]);
 
-            // Detect intent for analytics
-            $intent = $this->geminiService->detectIntent($request->message);
-
             return response()->json([
                 'success' => true,
                 'message' => $aiResponse,
                 'session_id' => $sessionId,
-                'intent' => $intent,
                 'timestamp' => now()->toIso8601String(),
             ]);
 
