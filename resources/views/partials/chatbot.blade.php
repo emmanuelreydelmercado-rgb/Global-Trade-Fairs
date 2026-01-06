@@ -3,7 +3,7 @@
 
 @if(config('services.gemini.api_key'))
     {{-- Chatbot CSS --}}
-    <link rel="stylesheet" href="{{ asset('css/chatbot.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/chatbot.css') }}?v=2.0">
 
     {{-- Chatbot JavaScript --}}
     <script>
@@ -13,5 +13,5 @@
             userName: "{{ auth()->check() ? auth()->user()->name : 'Guest' }}"
         };
     </script>
-    <script src="{{ asset('js/chatbot.js') }}" defer></script>
+    <script src="{{ asset('js/chatbot.js') }}?v=2.0" defer></script>
 @endif
