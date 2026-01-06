@@ -204,6 +204,28 @@ Route::get('/debug-profile', function() {
     return view('debug-profile');
 })->middleware('auth');
 
+// DEBUG: Chatbot diagnostic
+Route::get('/test-chatbot', function() {
+    $apiKey = config('services.gemini.api_key');
+    $model = config('services.gemini.model', 'gemini-2.5-flash');
+    
+    return response()->json([
+        'api_key_configured' => !empty($apiKey),
+        'api_key_length' => strlen($apiKey ?? ''),
+        'api_key_first_10' => !empty($apiKey) ? substr($apiKey, 0, 10) . '...' : 'NOT SET',
+        'model' => $model,
+        'chatbot_enabled' => config('services.gemini.enabled', true),
+        'database' => [
+            'conversations_table_exists' => Schema::hasTable('chat_conversations'),
+            'messages_table_exists' => Schema::hasTable('chat_messages'),
+        ],
+        'env_check' => [
+            'APP_DEBUG' => config('app.debug'),
+            'APP_ENV' => config('app.env'),
+        ]
+    ]);
+});
+
 require __DIR__.'/auth.php';
 
 /*
