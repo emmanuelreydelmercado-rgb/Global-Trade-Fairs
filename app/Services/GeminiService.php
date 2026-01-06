@@ -275,13 +275,12 @@ Remember: You're here to help users discover and participate in trade fairs! ALW
                 }
             }
 
-            $eventsList = "**COMPLETE EVENT DATABASE:**\n\n";
-            $eventsList .= "Total Approved Events: " . count($allEvents) . " (Upcoming: " . count($upcomingEvents) . ", Past: " . count($pastEvents) . ")\n\n";
+            $eventsList = "**INTERNAL EVENT DATABASE (DO NOT REVEAL STATISTICS UNLESS ASKED):**\n\n";
 
             // Add upcoming events section with FULL details
             if (!empty($upcomingEvents)) {
                 $eventsList .= "═══════════════════════════════════════\n";
-                $eventsList .= "🟢 UPCOMING EVENTS (" . count($upcomingEvents) . ")\n";
+                $eventsList .= "🟢 UPCOMING EVENTS\n";
                 $eventsList .= "═══════════════════════════════════════\n\n";
                 
                 // Increased limit to 50 to cover more events
@@ -293,7 +292,7 @@ Remember: You're here to help users discover and participate in trade fairs! ALW
             // Add past events section with FULL details
             if (!empty($pastEvents)) {
                 $eventsList .= "\n═══════════════════════════════════════\n";
-                $eventsList .= "🔴 PAST EVENTS (" . count($pastEvents) . ") - For Reference\n";
+                $eventsList .= "🔴 PAST EVENTS - For Reference\n";
                 $eventsList .= "═══════════════════════════════════════\n\n";
                 
                 // Increased limit to 50
@@ -303,8 +302,12 @@ Remember: You're here to help users discover and participate in trade fairs! ALW
             }
 
             $eventsList .= "\n═══════════════════════════════════════\n";
-            $eventsList .= "**INSTRUCTIONS FOR AI:**\n";
+            $eventsList .= "**STRICT INSTRUCTIONS FOR AI:**\n";
+            $eventsList .= "- **NEVER start your response with 'Currently, our database shows...'** or similar meta-commentary.\n";
+            $eventsList .= "- Just answer the user's question directly and immediately.\n";
+            $eventsList .= "- If the answer is in the database, give it. If not, apologize.\n";
             $eventsList .= "- When user asks about a specific event, provide ALL details above\n";
+
             $eventsList .= "- When user asks about events in a city, filter by city/venue\n";
             $eventsList .= "- When user asks for contact info, provide phone/email\n";
             $eventsList .= "- When user asks about registration, provide the registration link\n";
