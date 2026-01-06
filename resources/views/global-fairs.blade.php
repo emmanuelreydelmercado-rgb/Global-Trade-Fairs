@@ -254,11 +254,12 @@
         <div
             x-data="{ x: 0, y: 0 }"
             @mousemove="
-                // Disable tilt on mobile for smooth scrolling
-                if (window.innerWidth < 1024) return;
-                const r = $el.getBoundingClientRect();
-                x = ((event.clientX - r.left) / r.width - 0.5) * 10;
-                y = ((event.clientY - r.top) / r.height - 0.5) * -10;
+                // Disable tilt on mobile
+                if (window.innerWidth >= 1024) {
+                    const r = $el.getBoundingClientRect();
+                    x = ((event.clientX - r.left) / r.width - 0.5) * 10;
+                    y = ((event.clientY - r.top) / r.height - 0.5) * -10;
+                }
             "
             @mouseleave="x = 0; y = 0"
             class="group bg-white rounded-xl border overflow-hidden flex flex-col
