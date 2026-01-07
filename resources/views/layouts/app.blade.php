@@ -15,6 +15,8 @@
 
         <!-- Tailwind CSS CDN -->
         <script src="https://cdn.tailwindcss.com"></script>
+
+        @include('partials.google-analytics')
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

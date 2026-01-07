@@ -33,6 +33,8 @@
             },
         };
     </script>
+
+    @include('partials.google-analytics')
 </head>
 
 <body class="bg-[#f4f7fb] font-display min-h-screen flex flex-col">

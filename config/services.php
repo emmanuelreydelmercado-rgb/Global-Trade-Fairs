@@ -49,4 +49,8 @@ return [
         'model' => env('GROQ_MODEL', 'llama-3.3-70b-versatile'),
     ],
 
+    'google_analytics' => [
+        'measurement_id' => env('GOOGLE_ANALYTICS_MEASUREMENT_ID'),
+    ],
+
 ];
