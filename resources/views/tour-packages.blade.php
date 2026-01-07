@@ -126,6 +126,7 @@
                         src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
                             ? asset('profilepics/' . auth()->user()->profilepic)
                             : asset('profilepics/user_avatar.png') }}"
+                        onerror="this.src='{{ asset('profilepics/user_avatar.png') }}'"
                         class="w-10 h-10 rounded-full object-cover border-2 border-white ring-2 ring-blue-500 shadow-md"
                         alt="User Profile"
                     >
@@ -152,6 +153,7 @@
                                 src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
                                     ? asset('profilepics/' . auth()->user()->profilepic)
                                     : asset('profilepics/user_avatar.png') }}"
+                                onerror="this.src='{{ asset('profilepics/user_avatar.png') }}'"
                                 class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white"
                                 alt="User"
                             >

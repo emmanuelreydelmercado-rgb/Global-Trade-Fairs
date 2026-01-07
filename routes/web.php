@@ -8,6 +8,7 @@ use App\Http\Controllers\InputBoxController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,6 +86,12 @@ Route::post('/logout', [LoginController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+
+    // -------------------------
+    // ANALYTICS API
+    // -------------------------
+    Route::get('/api/analytics/dashboard-stats', [AnalyticsController::class, 'getDashboardStats'])
+        ->name('analytics.dashboard.stats');
 
     // -------------------------
     // DASHBOARDS

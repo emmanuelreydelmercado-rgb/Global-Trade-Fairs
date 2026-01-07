@@ -53,6 +53,66 @@
                 </div>
             @endif
 
+            {{-- Google Analytics Stats Widget --}}
+            <div class="bg-gradient-to-r from-primary to-blue-700 rounded-2xl shadow-xl p-6 mb-6 text-white">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-2xl font-bold flex items-center gap-2">
+                            <span class="material-icons">analytics</span>
+                            Website Analytics
+                        </h3>
+                        <p class="text-blue-100 text-sm mt-1">Real-time visitor statistics</p>
+                    </div>
+                    <a href="https://analytics.google.com" target="_blank" 
+                       class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-2">
+                        <span class="material-icons text-sm">open_in_new</span>
+                        View Full Report
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {{-- Today's Visitors --}}
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4 hover:bg-white/20 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="material-icons text-3xl">people</span>
+                            <span class="text-xs bg-green-500 px-2 py-1 rounded-full text-white">Live</span>
+                        </div>
+                        <p class="text-3xl font-bold" id="todayVisitors">-</p>
+                        <p class="text-sm text-blue-100">Today's Visitors</p>
+                    </div>
+
+                    {{-- Active Users --}}
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4 hover:bg-white/20 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="material-icons text-3xl">visibility</span>
+                            <span class="text-xs bg-red-500 px-2 py-1 rounded-full text-white animate-pulse">Now</span>
+                        </div>
+                        <p class="text-3xl font-bold" id="activeUsers">-</p>
+                        <p class="text-sm text-blue-100">Active Users</p>
+                    </div>
+
+                    {{-- Total Page Views --}}
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4 hover:bg-white/20 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="material-icons text-3xl">pageview</span>
+                        </div>
+                        <p class="text-3xl font-bold" id="pageViews">-</p>
+                        <p class="text-sm text-blue-100">Page Views Today</p>
+                    </div>
+
+                    {{-- Avg Session Duration --}}
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-4 hover:bg-white/20 transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="material-icons text-3xl">schedule</span>
+                        </div>
+                        <p class="text-3xl font-bold" id="avgDuration">-</p>
+                        <p class="text-sm text-blue-100">Avg. Duration</p>
+                    </div>
+                </div>
+
+                {{-- Quick Instructions --}}
+            </div>
+
             {{-- Pending Events --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
@@ -459,5 +519,42 @@
             filterTable(approvedRows, '', noApproved);
             searchInput.focus();
         });
+
+        // -------------------------
+        // GOOGLE ANALYTICS DATA
+        // -------------------------
+        async function fetchAnalyticsData() {
+            try {
+                const response = await fetch('{{ route("analytics.dashboard.stats") }}');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const data = result.data;
+                    
+                    // Update stats
+                    document.getElementById('todayVisitors').textContent = 
+                        data.today_visitors ? data.today_visitors.toLocaleString() : '0';
+                    
+                    document.getElementById('activeUsers').textContent = 
+                        data.active_users ? data.active_users.toLocaleString() : '0';
+                    
+                    document.getElementById('pageViews').textContent = 
+                        data.page_views ? data.page_views.toLocaleString() : '0';
+                    
+                    document.getElementById('avgDuration').textContent = 
+                        data.avg_duration || '0m 0s';
+                } else {
+                    console.error('Analytics API error:', result.error);
+                }
+            } catch (error) {
+                console.error('Failed to fetch analytics:', error);
+            }
+        }
+
+        // Fetch data on page load
+        fetchAnalyticsData();
+
+        // Auto-refresh every 30 seconds
+        setInterval(fetchAnalyticsData, 30000);
     </script>
 </x-app-layout>

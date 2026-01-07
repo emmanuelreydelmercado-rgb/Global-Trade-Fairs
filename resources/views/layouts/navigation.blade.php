@@ -35,6 +35,7 @@
                         src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
                             ? asset('profilepics/' . auth()->user()->profilepic)
                             : asset('profilepics/user_avatar.png') }}"
+                        onerror="this.src='{{ asset('profilepics/user_avatar.png') }}'"
                         class="w-10 h-10 rounded-full object-cover border-2 border-white ring-2 ring-blue-500 shadow-md"
                         alt="User Profile"
                     >
@@ -57,10 +58,11 @@
                     <!-- User Info Section -->
                     <div class="flex flex-col items-center p-6 border-b border-gray-50 bg-gradient-to-b from-white to-gray-50/50">
                         <div class="relative mb-3">
-                            <img
+                             <img
                                 src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
                                     ? asset('profilepics/' . auth()->user()->profilepic)
                                     : asset('profilepics/user_avatar.png') }}"
+                                onerror="this.src='{{ asset('profilepics/user_avatar.png') }}'"
                                 class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white"
                                 alt="User"
                             >
@@ -125,10 +127,11 @@
         <!-- Responsive Settings -->
         <div class="pt-4 pb-3 border-t border-gray-200 bg-white">
             <div class="px-4 flex items-center gap-3">
-                <img
+                 <img
                     src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
                         ? asset('profilepics/' . auth()->user()->profilepic)
                         : asset('profilepics/user_avatar.png') }}"
+                    onerror="this.src='{{ asset('profilepics/user_avatar.png') }}'"
                     class="w-10 h-10 rounded-full object-cover"
                     alt="User"
                 >

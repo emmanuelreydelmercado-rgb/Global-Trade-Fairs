@@ -104,6 +104,7 @@ class="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blu
                     @auth
                         <div class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 flex items-center gap-4">
                             <img src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg') ? asset('profilepics/' . auth()->user()->profilepic) : asset('profilepics/user_avatar.png') }}" 
+                                 onerror="this.src='{{ asset('profilepics/user_avatar.png') }}'"
                                  class="w-14 h-14 rounded-full object-cover border-2 border-white dark:border-gray-700">
                             <div class="flex-grow">
                                 <h3 class="font-bold text-lg dark:text-white">{{ auth()->user()->name }}</h3>
