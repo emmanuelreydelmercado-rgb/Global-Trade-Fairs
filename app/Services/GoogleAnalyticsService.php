@@ -21,6 +21,15 @@ class GoogleAnalyticsService
         $credentialsPath = base_path(config('services.google_analytics.credentials_path'));
         $this->propertyId = config('services.google_analytics.property_id');
 
+        // PRODUCTION FIX: Generate credentials file from ENV if missing
+        if (!file_exists($credentialsPath) && env('GOOGLE_ANALYTICS_CREDENTIALS_JSON')) {
+            $jsonContent = env('GOOGLE_ANALYTICS_CREDENTIALS_JSON');
+            if (is_array($jsonContent)) {
+                $jsonContent = json_encode($jsonContent);
+            }
+            file_put_contents($credentialsPath, $jsonContent);
+        }
+
         if (!file_exists($credentialsPath)) {
             Log::error('Google Analytics credentials file not found: ' . $credentialsPath);
             return;
