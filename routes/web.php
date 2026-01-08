@@ -41,8 +41,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/payment/failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
     Route::get('/payment/download/{paymentId}', [PaymentController::class, 'downloadReceipt'])->name('payment.download');
     
+    
     // Admin payment management
     Route::get('/admin/payments', [PaymentController::class, 'index'])->name('admin.payments');
+
+    // Wishlist routes
+    Route::post('/wishlist/toggle', [App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::get('/wishlist', [App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::get('/wishlist/check/{formId}', [App\Http\Controllers\WishlistController::class, 'check'])->name('wishlist.check');
 });
 
 

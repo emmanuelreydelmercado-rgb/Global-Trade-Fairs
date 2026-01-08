@@ -10,10 +10,6 @@
         });
     },
     applyTheme() {
-        if (window.innerWidth >= 1024) {
-            document.documentElement.classList.remove('dark');
-            return;
-        }
         if (this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
@@ -129,7 +125,24 @@ class="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blu
                     @endauth
                 </div>
 
-                <!-- 2. Preferences -->
+                <!-- 2. Wishlist Section -->
+                @auth
+                <div class="mb-8">
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">My Favorites</h3>
+                    <a href="{{ route('wishlist.index') }}" class="flex items-center justify-between p-4 bg-pink-50 dark:bg-pink-900/20 rounded-2xl hover:bg-pink-100 dark:hover:bg-pink-900/30 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="material-icons text-2xl text-red-500">favorite</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Wishlist</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">View saved events</p>
+                            </div>
+                        </div>
+                        <span class="material-icons text-gray-400">chevron_right</span>
+                    </a>
+                </div>
+                @endauth
+
+                <!-- 3. Preferences -->
                 <div>
                     <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Preferences</h3>
                     

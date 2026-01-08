@@ -39,6 +39,27 @@
 <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
 <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 
+    <style>
+        /* Custom Scrollbar for Share Dropdown */
+        .share-dropdown-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .share-dropdown-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .share-dropdown-scroll::-webkit-scrollbar-thumb {
+            background: #1a73e8;
+            border-radius: 10px;
+        }
+        
+        .share-dropdown-scroll::-webkit-scrollbar-thumb:hover {
+            background: #1557b0;
+        }
+    </style>
+
     @include('partials.google-analytics')
 </head>
 
@@ -76,6 +97,94 @@
     
     {{-- Auth Section --}}
     <div class="hidden lg:flex items-center gap-4">
+        <!-- Settings Dropdown (FOR EVERYONE) -->
+        <div class="relative" x-data="{ 
+            settingsOpen: false,
+            theme: localStorage.getItem('theme') || 'light',
+            initTheme() {
+                this.applyTheme();
+                this.$watch('theme', () => {
+                    localStorage.setItem('theme', this.theme);
+                    this.applyTheme();
+                });
+            },
+            applyTheme() {
+                if (this.theme === 'dark' || (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+        }" x-init="initTheme()">
+            <button 
+                @click="settingsOpen = !settingsOpen" 
+                @click.outside="settingsOpen = false"
+                class="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors relative"
+            >
+                <span class="material-icons">settings</span>
+            </button>
+
+            <!-- Settings Dropdown -->
+            <div 
+                x-show="settingsOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                class="absolute right-0 mt-3 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 z-50 overflow-hidden"
+                style="display: none;"
+            >
+                <div class="p-5">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800 dark:text-white">Settings</h3>
+
+                    <!-- Wishlist Link (ONLY FOR AUTHENTICATED USERS) -->
+                    @auth
+                    <a href="{{ route('wishlist.index') }}" class="flex items-center gap-3 p-3 bg-pink-50 dark:bg-pink-900/20 rounded-xl hover:bg-pink-100 dark:hover:bg-pink-900/30 transition-colors mb-4">
+                        <span class="material-icons text-red-500 text-2xl">favorite</span>
+                        <div>
+                            <h4 class="font-bold text-gray-800 dark:text-white">Wishlist</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">View Liked Events</p>
+                        </div>
+                    </a>
+                    @else
+                    <!-- Login Prompt for Guests -->
+                    <a href="{{ route('login') }}" class="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors mb-4">
+                        <span class="material-icons text-primary text-2xl">login</span>
+                        <div>
+                            <h4 class="font-bold text-gray-800 dark:text-white">Login to Save Events</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Create a wishlist</p>
+                        </div>
+                    </a>
+                    @endauth
+
+                    <!-- Dark Mode (FOR EVERYONE) -->
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase mb-2">Theme</h4>
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-xl p-1 flex relative">
+                            <div class="absolute top-1 bottom-1 rounded-lg bg-white dark:bg-gray-600 shadow-sm transition-all duration-300 w-1/3"
+                                 :style="theme === 'light' ? 'left: 4px' : (theme === 'dark' ? 'left: 66%' : 'left: 33%')">
+                            </div>
+
+                            <button @click="theme = 'light'" class="relative z-10 w-1/3 py-2 text-sm font-medium transition-colors"
+                                :class="theme === 'light' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'">
+                                Light
+                            </button>
+                            <button @click="theme = 'system'" class="relative z-10 w-1/3 py-2 text-sm font-medium transition-colors"
+                                :class="theme === 'system' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'">
+                                System
+                            </button>
+                            <button @click="theme = 'dark'" class="relative z-10 w-1/3 py-2 text-sm font-medium transition-colors"
+                                :class="theme === 'dark' ? 'text-primary' : 'text-gray-500 dark:text-gray-400'">
+                                Dark
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @if(Auth::check())
             <!-- Profile Dropdown -->
             <div class="relative" x-data="{ profileOpen: false }">
@@ -106,40 +215,40 @@
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                     x-transition:leave-end="opacity-0 scale-95 translate-y-2"
-                    class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden"
+                    class="absolute right-0 mt-3 w-72 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 z-50 overflow-hidden"
                     style="display: none;"
                 >
                     <!-- User Info Section -->
-                    <div class="flex flex-col items-center p-6 border-b border-gray-50 bg-gradient-to-b from-white to-gray-50/50">
+                    <div class="flex flex-col items-center p-6 border-b border-gray-50 dark:border-gray-700 bg-gradient-to-b from-white to-gray-50/50 dark:from-gray-800 dark:to-gray-800/50">
                         <div class="relative mb-3">
                             <img
                                 src="{{ (auth()->user()->profilepic && auth()->user()->profilepic !== 'default.jpg')
                                     ? asset('profilepics/' . auth()->user()->profilepic)
                                     : asset('profilepics/user_avatar.png') }}"
                                 onerror="this.src='{{ asset('profilepics/user_avatar.png') }}'"
-                                class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white"
+                                class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white dark:border-gray-700"
                                 alt="User"
                             >
-                            <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+                            <span class="absolute bottom-1 right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-gray-700 rounded-full"></span>
                         </div>
                         
-                        <h3 class="font-bold text-gray-800 text-lg text-center leading-tight">
+                        <h3 class="font-bold text-gray-800 dark:text-white text-lg text-center leading-tight">
                             {{ auth()->user()->name }}
                         </h3>
-                        <p class="text-xs text-gray-500 text-center mt-1 font-medium bg-gray-100 px-3 py-1 rounded-full">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 text-center mt-1 font-medium bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
                             {{ auth()->user()->email }}
                         </p>
                     </div>
 
                     <!-- Actions -->
-                    <div class="p-2 bg-gray-50/30">
+                    <div class="p-2 bg-gray-50/30 dark:bg-gray-900/30">
                         <!-- You can add more menu items here later -->
                         
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button
                                 type="submit"
-                                class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-all group"
+                                class="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all group"
                             >
                                 <span class="material-icons text-xl group-hover:-translate-x-1 transition-transform">logout</span>
                                 Sign Out
@@ -258,17 +367,66 @@
             x-data="{ 
                 x: 0, 
                 y: 0,
+                isLiked: {{ in_array($form->id, $wishlistFormIds) ? 'true' : 'false' }},
+                shareOpen: false,
+                showToast: false,
                 baseTransform: '',
                 handleMove(e) {
                     if (window.innerWidth < 1024) return;
                     const r = $el.getBoundingClientRect();
                     this.x = ((e.clientX - r.left) / r.width - 0.5) * 10;
                     this.y = ((e.clientY - r.top) / r.height - 0.5) * -10;
+                },
+                async toggleLike() {
+                    @auth
+                        try {
+                            const response = await fetch('{{ route("wishlist.toggle") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({ form_id: {{ $form->id }} })
+                            });
+                            const data = await response.json();
+                            if (data.success) {
+                                this.isLiked = data.action === 'added';
+                            }
+                        } catch (error) {
+                            console.error('Error toggling wishlist:', error);
+                        }
+                    @else
+                        window.location.href = '{{ route('login') }}';
+                    @endauth
+                },
+                shareEvent(platform) {
+                    const url = '{{ route('fair.details', $form->id) }}';
+                    const text = '{{ addslashes($form->ExponName) }} - {{ addslashes($form->city) }}';
+                    
+                    let shareUrl = '';
+                    if (platform === 'whatsapp') {
+                        shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+                    } else if (platform === 'facebook') {
+                        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                    } else if (platform === 'twitter') {
+                        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                    } else if (platform === 'copy') {
+                        navigator.clipboard.writeText(url);
+                        this.showToast = true;
+                        setTimeout(() => { this.showToast = false; }, 2000);
+                        this.shareOpen = false;
+                        return;
+                    }
+                    
+                    if (shareUrl) {
+                        window.open(shareUrl, '_blank', 'width=600,height=400');
+                    }
+                    this.shareOpen = false;
                 }
             }"
             @mousemove="handleMove($event)"
             @mouseleave="x = 0; y = 0"
-            class="group bg-white rounded-xl border overflow-hidden flex flex-col
+            class="group bg-white rounded-xl border overflow-visible flex flex-col
                    transition-all duration-300 ease-out
                    hover:-translate-y-2 hover:shadow-2xl
                    will-change-transform"
@@ -277,13 +435,78 @@
         >
 
             <!-- IMAGE -->
-            <div class="relative h-48 overflow-hidden bg-gray-100">
-                <img
-    src="{{ asset($form->image ? 'uploads/'.$form->image : 'uploads/default.jpg') }}"
-    class="w-full h-full object-contain
-           transition-transform duration-500 ease-out
-           group-hover:scale-105">
+            <div class="relative h-48 overflow-visible bg-gray-100">
+                <div class="absolute inset-0 overflow-hidden">
+                    <img
+                        src="{{ asset($form->image ? 'uploads/'.$form->image : 'uploads/default.jpg') }}"
+                        class="w-full h-full object-contain
+                               transition-transform duration-500 ease-out
+                               group-hover:scale-105">
+                </div>
 
+                <!-- Like & Share Icons (Top Left) -->
+                <div class="absolute top-3 left-3 flex gap-2 z-10">
+                    <!-- Like Button -->
+                    <button 
+                        @click="toggleLike()"
+                        class="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center
+                               shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110"
+                        :class="isLiked ? 'text-red-500' : 'text-gray-600'"
+                    >
+                        <span class="material-icons text-xl" x-text="isLiked ? 'favorite' : 'favorite_border'">favorite_border</span>
+                    </button>
+
+                    <!-- Share Button -->
+                    <div class="relative overflow-visible">
+                        <button 
+                            @click="shareOpen = !shareOpen"
+                            class="w-9 h-9 rounded-full bg-white/90 backdrop-blur flex items-center justify-center
+                                   shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 text-gray-600"
+                        >
+                            <span class="material-icons text-xl">share</span>
+                        </button>
+
+                        <!-- Share Dropdown -->
+                        <div 
+                            x-show="shareOpen"
+                            @click.outside="shareOpen = false"
+                            x-transition:enter="transition ease-out duration-200"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-150"
+                            x-transition:leave-start="opacity-100 scale-100"
+                            x-transition:leave-end="opacity-0 scale-95"
+                            class="absolute left-0 top-full mt-2 w-44 bg-white rounded-lg shadow-xl border z-[100]"
+                            style="display: none;"
+                        >
+                            <button @click="shareEvent('whatsapp')" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="#25D366">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                </svg>
+                                <span class="font-medium">WhatsApp</span>
+                            </button>
+                            <button @click="shareEvent('facebook')" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="#1877F2">
+                                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                </svg>
+                                <span class="font-medium">Facebook</span>
+                            </button>
+                            <button @click="shareEvent('twitter')" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="#000000">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                </svg>
+                                <span class="font-medium">Twitter</span>
+                            </button>
+                            <button @click="shareEvent('copy')" class="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 transition-colors">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                                <span class="font-medium">Copy Link</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 @php
                     $eventDate = \Carbon\Carbon::parse($form->Date);
@@ -348,6 +571,27 @@
                            group-hover:shadow-md">
                     View Details
                 </a>
+            </div>
+
+            <!-- Toast Notification -->
+            <div 
+                x-show="showToast"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 -translate-y-4"
+                x-transition:enter-end="opacity-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 -translate-y-4"
+                class="fixed top-24 left-1/2 transform -translate-x-1/2 z-[200] 
+                       bg-white dark:bg-gray-800 text-gray-800 dark:text-white
+                       px-5 py-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 
+                       flex items-center gap-2"
+                style="display: none;"
+            >
+                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-sm font-medium">Link Copied!</span>
             </div>
         </div>
         @empty

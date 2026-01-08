@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Form;
+use App\Models\Wishlist;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -90,7 +92,15 @@ class HomeController extends Controller
         $totalCountries = $mapStats['totalCountries'];
         $avgPerCountry = $mapStats['avgPerCountry'];
 
+        // Get wishlist form IDs for current user (if authenticated)
+        $wishlistFormIds = [];
+        if (Auth::check()) {
+            $wishlistFormIds = Wishlist::where('user_id', Auth::id())
+                ->pluck('form_id')
+                ->toArray();
+        }
+
         // Return view
-        return view('global-fairs', compact('forms', 'mapData', 'totalEvents', 'totalCountries', 'avgPerCountry'));
+        return view('global-fairs', compact('forms', 'mapData', 'totalEvents', 'totalCountries', 'avgPerCountry', 'wishlistFormIds'));
     }
 }
