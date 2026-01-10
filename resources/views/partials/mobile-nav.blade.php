@@ -1,7 +1,7 @@
 <!-- ================= MOBILE APP NAVIGATION ================= -->
 <div x-data="{ 
     settingsOpen: false, 
-    theme: localStorage.getItem('theme') || 'system',
+    theme: localStorage.getItem('theme') || 'light',
     initTheme() {
         this.applyTheme();
         this.$watch('theme', () => {
