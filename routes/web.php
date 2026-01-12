@@ -85,6 +85,16 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])
     ->name('logout');
 
+// Google OAuth Routes
+use App\Http\Controllers\Auth\GoogleController;
+
+Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])
+    ->name('auth.google');
+    
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
+    ->name('auth.google.callback');
+
+
 
 /*
 |--------------------------------------------------------------------------

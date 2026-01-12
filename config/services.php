@@ -55,4 +55,10 @@ return [
         'credentials_path' => env('GOOGLE_ANALYTICS_CREDENTIALS_PATH', 'storage/app/google-analytics-credentials.json'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL') . '/auth/google/callback'),
+    ],
+
 ];
