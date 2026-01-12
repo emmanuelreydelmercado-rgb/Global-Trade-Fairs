@@ -396,7 +396,21 @@
                             console.error('Error toggling wishlist:', error);
                         }
                     @else
-                        window.location.href = '{{ route('login') }}';
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Login Required',
+                            text: 'Please Login to like and save events to your wishlist!',
+                            showCancelButton: true,
+                            confirmButtonText: '🔐 Login Now',
+                            cancelButtonText: 'Cancel',
+                            confirmButtonColor: '#1a73e8',
+                            cancelButtonColor: '#6b7280',
+                            reverseButtons: true
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = '{{ route("login") }}';
+                            }
+                        });
                     @endauth
                 },
                 shareEvent(platform) {
