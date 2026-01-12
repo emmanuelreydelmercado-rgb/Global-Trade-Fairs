@@ -85,12 +85,18 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])
     ->name('logout');
 
-// Google OAuth Routes
+// Google OAuth Routes - Separated Login and Registration
 use App\Http\Controllers\Auth\GoogleController;
 
-Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])
-    ->name('auth.google');
+// Google Login - Only for existing verified users
+Route::get('/auth/google/login', [GoogleController::class, 'redirectToGoogleLogin'])
+    ->name('auth.google.login');
+
+// Google Registration - Create new users requiring verification
+Route::get('/auth/google/register', [GoogleController::class, 'redirectToGoogleRegister'])
+    ->name('auth.google.register');
     
+// Callback handler - handles both login and registration based on intent
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])
     ->name('auth.google.callback');
 
