@@ -183,8 +183,25 @@ Route::middleware(['auth'])->group(function () {
 | FAIR DETAILS
 |--------------------------------------------------------------------------
 */
-Route::get('/fair/{id}', function ($id) {
-    $form = Form::findOrFail($id);
+Route::get('/fair/{identifier}', function ($identifier) {
+    // Try to find by slug first
+    $form = Form::where('slug', $identifier)->first();
+    
+    // If not found by slug, try by ID
+    if (!$form && is_numeric($identifier)) {
+        $form = Form::find($identifier);
+        
+        // If found by ID, redirect to slug URL for SEO
+        if ($form && $form->slug) {
+            return redirect()->route('fair.details', $form->slug, 301);
+        }
+    }
+    
+    // If still not found, 404
+    if (!$form) {
+        abort(404);
+    }
+    
     return view('fair-details', compact('form'));
 })->name('fair.details');
 
