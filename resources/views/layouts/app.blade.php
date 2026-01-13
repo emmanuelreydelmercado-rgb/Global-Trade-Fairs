@@ -5,7 +5,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <!-- SEO Meta Tags -->
+        <title>@yield('title', 'Global Trade Fairs - Find Trade Shows & Exhibitions Worldwide')</title>
+        <meta name="description" content="@yield('description', 'Discover upcoming trade fairs, exhibitions, and expos worldwide. Hardware, technology, manufacturing events and more. Find the perfect trade show for your business.')">
+        <meta name="keywords" content="@yield('keywords', 'trade fairs, exhibitions, expos, trade shows, hardware expo, tech events, manufacturing events, business events, B2B events')">
+        <meta name="author" content="Global Trade Fairs">
+        <meta name="robots" content="index, follow">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="@yield('og_type', 'website')">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:title" content="@yield('og_title', 'Global Trade Fairs')">
+        <meta property="og:description" content="@yield('og_description', 'Find trade shows and exhibitions worldwide')">
+        <meta property="og:image" content="@yield('og_image', asset('favicon.png'))">
+        <meta property="og:site_name" content="Global Trade Fairs">
+        
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:url" content="{{ url()->current() }}">
+        <meta name="twitter:title" content="@yield('twitter_title', 'Global Trade Fairs')">
+        <meta name="twitter:description" content="@yield('twitter_description', 'Find trade shows worldwide')">
+        <meta name="twitter:image" content="@yield('twitter_image', asset('favicon.png'))">
+        
+        <!-- Canonical URL -->
+        <link rel="canonical" href="{{ url()->current() }}">
+        
+        <!-- Favicon -->
         <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
 
         <!-- Fonts -->

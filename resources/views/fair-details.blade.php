@@ -3,7 +3,38 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>{{ $form->ExponName ?? 'Event Details' }} - Global Trade Fairs</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>{{ $form->ExponName }} - {{ $form->city }}, {{ $form->country ?? 'Global' }} | Global Trade Fairs</title>
+    <meta name="description" content="Join {{ $form->ExponName }} at {{ $form->VenueName }} in {{ $form->city }}, {{ $form->country ?? '' }}. Event organized by {{ $form->Orgname }} on {{ $form->Date }}. Register now for this trade fair exhibition.">
+    <meta name="keywords" content="{{ $form->ExponName }}, trade fair, exhibition, expo, {{ $form->city }}, {{ $form->country }}, {{ $form->Orgname }}, {{ date('Y', strtotime($form->Date)) }} events">
+    <meta name="author" content="{{ $form->Orgname }}">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="event">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $form->ExponName }} - {{ $form->city }}">
+    <meta property="og:description" content="Trade fair at {{ $form->VenueName }}, {{ $form->city }} on {{ $form->Date }}. Organized by {{ $form->Orgname }}.">
+    <meta property="og:image" content="{{ asset($form->image ? 'uploads/'.$form->image : 'uploads/default.jpg') }}">
+    <meta property="og:site_name" content="Global Trade Fairs">
+    
+    <!-- Event Specific Open Graph -->
+    <meta property="event:start_time" content="{{ $form->Date }}">
+    <meta property="event:location:latitude" content="">
+    <meta property="event:location:longitude" content="">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="{{ $form->ExponName }}">
+    <meta name="twitter:description" content="Trade fair in {{ $form->city }}, {{ $form->country ?? '' }} on {{ $form->Date }}">
+    <meta name="twitter:image" content="{{ asset($form->image ? 'uploads/'.$form->image : 'uploads/default.jpg') }}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+    
+    <!-- Favicon -->
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
 
     <!-- Tailwind -->
