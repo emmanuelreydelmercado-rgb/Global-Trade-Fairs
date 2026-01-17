@@ -236,6 +236,8 @@
 /* Typing Indicator */
 .typing-indicator {
     display: none;
+    flex-direction: row;
+    /* Explicitly set horizontal layout */
     align-items: center;
     gap: 8px;
     padding: 12px 16px;
@@ -248,6 +250,8 @@
 
 .typing-indicator.active {
     display: flex;
+    flex-direction: row;
+    /* Ensure horizontal even when active */
 }
 
 .typing-dot {
