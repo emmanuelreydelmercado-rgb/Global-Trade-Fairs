@@ -82,6 +82,12 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])
 
 Route::post('/login', [LoginController::class, 'login']);
 
+// GET /logout - Handle direct URL access or page refresh
+Route::get('/logout', function () {
+    return redirect()->route('home')->with('info', 'Please use the Sign Out button to logout.');
+});
+
+// POST /logout - Actual logout action
 Route::post('/logout', [LoginController::class, 'logout'])
     ->name('logout');
 
