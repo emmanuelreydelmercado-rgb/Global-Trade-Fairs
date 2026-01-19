@@ -2,6 +2,11 @@
 <div x-data="{ 
     settingsOpen: false, 
     theme: localStorage.getItem('theme') || 'light',
+    installPrompt: null,
+    init() {
+        this.initTheme();
+        this.initPwa();
+    },
     initTheme() {
         this.applyTheme();
         this.$watch('theme', () => {
@@ -15,8 +20,24 @@
         } else {
             document.documentElement.classList.remove('dark');
         }
+    },
+    initPwa() {
+        // Listen for the event safely
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.installPrompt = e;
+            console.log('Mobile PWA Install Triggered');
+        });
+    },
+    async installApp() {
+        if (!this.installPrompt) return;
+        this.installPrompt.prompt();
+        const { outcome } = await this.installPrompt.userChoice;
+        if (outcome === 'accepted') {
+            this.installPrompt = null;
+        }
     }
-}" x-init="initTheme()" 
+}" x-init="init()" 
 class="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 z-[100] grid grid-cols-4 gap-1 px-2 py-3 md:hidden shadow-[0_-5px_20px_rgba(0,0,0,0.05)] pb-safe">
     
     <!-- 1. Home -->
@@ -141,6 +162,20 @@ class="fixed bottom-0 left-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blu
                     </a>
                 </div>
                 @endauth
+
+                <!-- Install App Section -->
+                <div class="mb-8" x-show="installPrompt">
+                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-3">App</h3>
+                    <button @click="installApp()" class="w-full flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-2xl hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors text-left">
+                        <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center text-green-600 dark:text-green-300">
+                            <span class="material-icons text-xl">download</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 dark:text-white">Install App</h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Add to Home Screen</p>
+                        </div>
+                    </button>
+                </div>
 
                 <!-- 3. Preferences -->
                 <div>
