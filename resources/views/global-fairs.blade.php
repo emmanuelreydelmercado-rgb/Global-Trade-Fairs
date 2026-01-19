@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Global Trade Fairs</title>
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/png">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Tailwind -->
@@ -101,6 +105,11 @@
         <div class="relative" x-data="{ 
             settingsOpen: false,
             theme: localStorage.getItem('theme') || 'light',
+            installPrompt: null,
+            init() {
+                this.initTheme();
+                this.initPwa();
+            },
             initTheme() {
                 this.applyTheme();
                 this.$watch('theme', () => {
@@ -114,8 +123,23 @@
                 } else {
                     document.documentElement.classList.remove('dark');
                 }
+            },
+            initPwa() {
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    this.installPrompt = e;
+                    console.log('PWA Install Triggered');
+                });
+            },
+            async installApp() {
+                if (!this.installPrompt) return;
+                this.installPrompt.prompt();
+                const { outcome } = await this.installPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    this.installPrompt = null;
+                }
             }
-        }" x-init="initTheme()">
+        }" x-init="init()">
             <button 
                 @click="settingsOpen = !settingsOpen" 
                 @click.outside="settingsOpen = false"
@@ -158,6 +182,17 @@
                         </div>
                     </a>
                     @endauth
+                    
+                    <!-- PWA Install Button -->
+                    <div x-show="installPrompt" class="mb-4">
+                        <button @click="installApp()" class="w-full flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-xl hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors text-left">
+                            <span class="material-icons text-green-600 text-2xl">download</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800 dark:text-white">Install App</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Add to Home Screen</p>
+                            </div>
+                        </button>
+                    </div>
 
                     <!-- Dark Mode (FOR EVERYONE) -->
                     <div>
@@ -816,7 +851,7 @@ am5.ready(function () {
                             <li>✅ Lookthrough all events</li>
                             <li>✅ Personalized recommendations</li>
                             <li>✅ Event reminders & notifications</li>
-                            <li>✅ Access to exclusive tour packages</li>
+                            <li>✅ Access to exclusive tour packages and AI</li>
                         </ul>
                     </div>
                 `,
@@ -900,6 +935,20 @@ am5.ready(function () {
 
 {{-- AI Chatbot Widget --}}
 @include('partials.chatbot')
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
+</script>
 
 </body>
 </html>

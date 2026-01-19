@@ -18,6 +18,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'admin.email' => \App\Http\Middleware\AdminEmailMiddleware::class,
         ]);
+
+        // Exempt API routes from CSRF protection for Swagger/External testing
+        $middleware->validateCsrfTokens(except: [
+            'chatbot/*',
+            'payment/*',
+            'wishlist/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

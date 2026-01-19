@@ -1,0 +1,160 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Global Trade Fairs API",
+        "description": "Complete API documentation for Global Trade Fairs platform. This API provides endpoints for managing trade fairs, user authentication, payments, analytics, chatbot interactions, and wishlist management.",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Global Trade Fairs Support",
+            "email": "emmanuelreydelmercado@gmail.com"
+        }
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server"
+        },
+        {
+            "url": "https://global-trade-fairs.onrender.com",
+            "description": "Production Server"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Analytics",
+            "description": "Google Analytics data and dashboard statistics"
+        },
+        {
+            "name": "Chatbot",
+            "description": "AI-powered chatbot interactions (Groq/Llama)"
+        }
+    ],
+    "paths": {
+        "/api/analytics/dashboard-stats": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get dashboard analytics statistics",
+                "description": "Retrieves Google Analytics data including active users, today's visitors, page views, and average session duration. Data is cached for 60 seconds.",
+                "operationId": "getDashboard Stats",
+                "responses": {
+                    "200": {
+                        "description": "Analytics data retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "active_users": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                },
+                                                "today_visitors": {
+                                                    "type": "integer",
+                                                    "example": 235
+                                                },
+                                                "page_views": {
+                                                    "type": "integer",
+                                                    "example": 1543
+                                                },
+                                                "avg_duration": {
+                                                    "type": "string",
+                                                    "example": "2m 45s"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/chatbot/message": {
+            "post": {
+                "tags": [
+                    "Chatbot"
+                ],
+                "summary": "Send message to AI chatbot",
+                "description": "Send a message to the Groq-powered AI chatbot and receive an intelligent response about trade fairs.",
+                "operationId": "sendChatbotMessage",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "message"
+                                ],
+                                "properties": {
+                                    "message": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "example": "What trade fairs are happening in Dubai?"
+                                    },
+                                    "session_id": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "AI response generated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "There are 3 upcoming trade fairs in Dubai..."
+                                        },
+                                        "session_id": {
+                                            "type": "string",
+                                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Guest user exceeded free question limit"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        }
+    }
+}

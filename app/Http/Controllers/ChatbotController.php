@@ -20,6 +20,67 @@ class ChatbotController extends Controller
 
     /**
      * Send a message and get AI response
+     * 
+     * @OA\Post(
+     *     path="/chatbot/message",
+     *     summary="Send message to AI chatbot",
+     *     description="Send a message to the Groq-powered AI chatbot (Llama 3.3 model) and receive an intelligent response about trade fairs. Guest users limited to 2 questions.",
+     *     operationId="sendChatbotMessage",
+     *     tags={"Chatbot"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"message"},
+     *             @OA\Property(property="message", type="string", maxLength=1000, example="What trade fairs are happening in Dubai?", description="User's message to the chatbot"),
+     *             @OA\Property(property="session_id", type="string", nullable=true, example="550e8400-e29b-41d4-a716-446655440000", description="Session UUID for conversation history")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="AI response generated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="There are 3 upcoming trade fairs in Dubai: Tech Expo 2026, Dubai International Trade Fair, and Global Business Summit."),
+     *             @OA\Property(property="session_id", type="string", example="550e8400-e29b-41d4-a716-446655440000"),
+     *             @OA\Property(property="timestamp", type="string", format="date-time", example="2026-01-17T15:45:00Z")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Guest user exceeded free question limit (2 questions)",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Login Required - You have reached your free question limit (2 questions). Please login to continue."),
+     *             @OA\Property(property="action", type="string", example="login_required"),
+     *             @OA\Property(property="session_id", type="string", example="550e8400-e29b-41d4-a716-446655440000")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The message field is required."),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="message",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="The message field is required.")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error - AI service failure",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="I'm experiencing technical difficulties. Please try again later."),
+     *             @OA\Property(property="error", type="string", nullable=true, example="Groq API timeout")
+     *         )
+     *     )
+     * )
      */
     public function sendMessage(Request $request)
     {

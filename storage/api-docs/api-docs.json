@@ -1,0 +1,552 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Global Trade Fairs API",
+        "description": "Complete API documentation for Global Trade Fairs platform. This API provides endpoints for managing trade fairs, user authentication, payments, analytics, chatbot interactions, and wishlist management.",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Global Trade Fairs Support",
+            "email": "emmanuelreydelmercado@gmail.com"
+        }
+    },
+    "servers": [
+        {
+            "url": "/",
+            "description": "Default Server (Relative)"
+        },
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server"
+        },
+        {
+            "url": "https://global-trade-fairs.onrender.com",
+            "description": "Production Server"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Analytics",
+            "description": "Google Analytics data and dashboard statistics"
+        },
+        {
+            "name": "Chatbot",
+            "description": "AI-powered chatbot interactions (Groq/Llama)"
+        },
+        {
+            "name": "Wishlist",
+            "description": "User wishlist management for trade fairs"
+        },
+        {
+            "name": "Payments",
+            "description": "Razorpay payment processing and orders"
+        },
+        {
+            "name": "Locations",
+            "description": "Geographical data (Cities, Countries)"
+        }
+    ],
+    "paths": {
+        "/api/analytics/dashboard-stats": {
+            "get": {
+                "tags": [
+                    "Analytics"
+                ],
+                "summary": "Get dashboard analytics statistics",
+                "description": "Retrieves Google Analytics data including active users, today's visitors, page views, and average session duration. Data is cached for 60 seconds.",
+                "operationId": "getDashboardStats",
+                "responses": {
+                    "200": {
+                        "description": "Analytics data retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "active_users": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                },
+                                                "today_visitors": {
+                                                    "type": "integer",
+                                                    "example": 235
+                                                },
+                                                "page_views": {
+                                                    "type": "integer",
+                                                    "example": 1543
+                                                },
+                                                "avg_duration": {
+                                                    "type": "string",
+                                                    "example": "2m 45s"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/chatbot/message": {
+            "post": {
+                "tags": [
+                    "Chatbot"
+                ],
+                "summary": "Send message to AI chatbot",
+                "description": "Send a message to the Groq-powered AI chatbot and receive an intelligent response about trade fairs.",
+                "operationId": "sendChatbotMessage",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "message"
+                                ],
+                                "properties": {
+                                    "message": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "example": "What trade fairs are happening in Dubai?"
+                                    },
+                                    "session_id": {
+                                        "type": "string",
+                                        "nullable": true,
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "AI response generated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "There are 3 upcoming trade fairs in Dubai..."
+                                        },
+                                        "session_id": {
+                                            "type": "string",
+                                            "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        },
+                                        "timestamp": {
+                                            "type": "string",
+                                            "format": "date-time"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Guest user exceeded free question limit"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/chatbot/history": {
+            "get": {
+                "tags": [
+                    "Chatbot"
+                ],
+                "summary": "Get chat history",
+                "parameters": [
+                    {
+                        "name": "session_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Chat history retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "messages": {
+                                            "type": "array"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/chatbot/quick-actions": {
+            "get": {
+                "tags": [
+                    "Chatbot"
+                ],
+                "summary": "Get quick action suggestions",
+                "responses": {
+                    "200": {
+                        "description": "List of quick actions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "actions": {
+                                            "type": "array"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/chatbot/end-session": {
+            "post": {
+                "tags": [
+                    "Chatbot"
+                ],
+                "summary": "End current chat session",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "session_id"
+                                ],
+                                "properties": {
+                                    "session_id": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Session ended successfully"
+                    }
+                }
+            }
+        },
+        "/wishlist/toggle": {
+            "post": {
+                "tags": [
+                    "Wishlist"
+                ],
+                "summary": "Add or remove item from wishlist",
+                "security": [
+                    {
+                        "sessionAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "form_id"
+                                ],
+                                "properties": {
+                                    "form_id": {
+                                        "type": "integer",
+                                        "example": 42
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Wishlist updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "action": {
+                                            "type": "string",
+                                            "enum": [
+                                                "added",
+                                                "removed"
+                                            ]
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                }
+            }
+        },
+        "/wishlist/check/{formId}": {
+            "get": {
+                "tags": [
+                    "Wishlist"
+                ],
+                "summary": "Check if an item is in wishlist",
+                "security": [
+                    {
+                        "sessionAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "formId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status retrieved",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "inWishlist": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/payment/create-order": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Create Razorpay Order",
+                "security": [
+                    {
+                        "sessionAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "package_type",
+                                    "name",
+                                    "email",
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "package_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "basic",
+                                            "pro",
+                                            "expert"
+                                        ]
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "phone": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Order created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "order_id": {
+                                            "type": "string"
+                                        },
+                                        "amount": {
+                                            "type": "integer"
+                                        },
+                                        "key": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/payment/verify": {
+            "post": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Verify Razorpay Payment",
+                "security": [
+                    {
+                        "sessionAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": [
+                                    "razorpay_payment_id",
+                                    "razorpay_order_id",
+                                    "razorpay_signature"
+                                ],
+                                "properties": {
+                                    "razorpay_payment_id": {
+                                        "type": "string"
+                                    },
+                                    "razorpay_order_id": {
+                                        "type": "string"
+                                    },
+                                    "razorpay_signature": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment verified",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "redirect_url": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get-cities/{country}": {
+            "get": {
+                "tags": [
+                    "Locations"
+                ],
+                "summary": "Get cities by country name",
+                "description": "Returns a list of cities for a given country. Data is cached.",
+                "parameters": [
+                    {
+                        "name": "country",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "UAE"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of cities",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "cities": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

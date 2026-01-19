@@ -12,6 +12,24 @@ use App\Http\Controllers\AnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
+| Swagger API Documentation
+|--------------------------------------------------------------------------
+*/
+// Serve the API docs JSON file
+// Serve the API docs JSON file
+Route::get('/docs/api-docs.json', function () {
+    return response()->file(public_path('docs/api-docs.json'), [
+        'Content-Type' => 'application/json'
+    ]);
+})->name('swagger.docs');
+
+// Serve the Standalone Swagger UI
+Route::get('/api/documentation', function () {
+    return response()->file(public_path('api-docs.html'));
+});
+
+/*
+|--------------------------------------------------------------------------
 | HOME → Global Fairs Page
 |--------------------------------------------------------------------------
 */
