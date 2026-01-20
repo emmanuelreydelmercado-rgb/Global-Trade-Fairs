@@ -36,7 +36,7 @@ self.addEventListener('fetch', event => {
                     .then(cache => {
                         // Don't cache API calls or non-GET requests if you want to be safe, 
                         // but for a simple PWA, caching visited pages is good.
-                        if(event.request.method === 'GET' && !event.request.url.includes('/api/')) {
+                        if (event.request.method === 'GET' && !event.request.url.includes('/api/')) {
                             cache.put(event.request, responseToCache);
                         }
                     });
