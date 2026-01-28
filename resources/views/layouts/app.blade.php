@@ -42,6 +42,10 @@
         <script src="https://cdn.tailwindcss.com"></script>
 
         @include('partials.google-analytics')
+
+        <!-- Google AdSense -->
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7636580147246668"
+                crossorigin="anonymous"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
