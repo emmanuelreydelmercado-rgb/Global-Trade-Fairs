@@ -19,7 +19,8 @@ class WhatsAppService
     }
 
     /**
-     * Send a notification about a new event.
+     * Send a notification about a new event using hello_world template.
+     * This works with Meta's test phone number without any 24h restriction.
      *
      * @param array $eventDetails Key-value pairs of event details
      * @return bool
@@ -33,26 +34,17 @@ class WhatsAppService
 
         $url = "https://graph.facebook.com/v22.0/{$this->phoneNumberId}/messages";
 
-        // Format the message
-        $messageBody = "🎉 *New Event Created!* \n\n" .
-            "📌 *Event:* " . ($eventDetails['ExponName'] ?? 'N/A') . "\n" .
-            "🏢 *Organizer:* " . ($eventDetails['Orgname'] ?? 'N/A') . "\n" .
-            "📅 *Date:* " . ($eventDetails['Date'] ?? 'N/A') . "\n" .
-            "📍 *Venue:* " . ($eventDetails['VenueName'] ?? 'N/A') . "\n" .
-            "🌍 *Location:* " . ($eventDetails['city'] ?? '') . ", " . ($eventDetails['country'] ?? '');
-
-        // Payload for a text message
-        // Note: For business-initiated conversations, you normally need to use a Template.
-        // However, if the recipient has messaged the business in the last 24h, this text message will work.
-        // If not, this might fail with a policy violation error.
-        // In that case, you must create a Template in Meta Business Manager and use 'type' => 'template'.
+        // Using 'hello_world' template — works with Meta test numbers
+        // and does NOT require the recipient to message first.
         $payload = [
             'messaging_product' => 'whatsapp',
             'to' => $this->recipientPhoneNumber,
-            'type' => 'text',
-            'text' => [
-                'preview_url' => false,
-                'body' => $messageBody
+            'type' => 'template',
+            'template' => [
+                'name' => 'hello_world',
+                'language' => [
+                    'code' => 'en_US'
+                ]
             ]
         ];
 
