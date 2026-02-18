@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Form;
+use App\Services\WhatsAppService;
 
 class InputBoxController extends Controller
 {
@@ -37,6 +38,21 @@ class InputBoxController extends Controller
             'reglink'   => $request->reglink,
             'status'    => 'pending'
         ]);
+
+        // 🚀 Send WhatsApp Notification
+        try {
+            $whatsappService = new WhatsAppService();
+            $whatsappService->sendEventNotification([
+                'ExponName' => $request->ExponName,
+                'Orgname'   => $request->Orgname,
+                'Date'      => $request->Date,
+                'VenueName' => $request->VenueName,
+                'city'      => $request->city,
+                'country'   => $request->country,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send WhatsApp notification: ' . $e->getMessage());
+        }
 
         return back()->with('message', 'Form submitted successfully!');
     }

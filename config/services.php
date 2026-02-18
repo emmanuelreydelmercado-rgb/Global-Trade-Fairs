@@ -61,4 +61,10 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL') . '/auth/google/callback'),
     ],
 
+    'whatsapp' => [
+        'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'recipient_phone_number' => env('WHATSAPP_RECIPIENT_PHONE_NUMBER'),
+    ],
+
 ];
