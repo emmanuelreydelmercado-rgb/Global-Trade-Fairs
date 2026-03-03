@@ -378,10 +378,7 @@ Route::get('/test-redis', function() {
     }
 });
 
-// SENTRY TEST ROUTE (temporary - delete after testing!)
-Route::get('/sentry-test', function() {
-    throw new \Exception('Sentry is working on Global Trade Fairs! 🎉');
-});
+
 
 
 
