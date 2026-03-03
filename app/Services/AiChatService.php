@@ -16,13 +16,13 @@ class AiChatService
 
     public function __construct()
     {
-        $this->client = new Client();
-        $this->apiKey = config('services.groq.api_key'); // Use config for production
-        $this->model = config('services.groq.model', 'llama-3.3-70b-versatile');
+        $this->client = new Client(['verify' => false]);
+        $this->apiKey = config('services.groq.api_key');
+        $this->model  = config('services.groq.model', 'llama-3.3-70b-versatile');
         $this->apiUrl = "https://api.groq.com/openai/v1/chat/completions";
     }
 
-    public function generateResponse($userMessage, $conversationHistory = [])
+    public function generateResponse($userMessage, $conversationHistory = [], $selectedLanguage = 'English')
     {
         try {
             // Handle greetings directly (prevent hallucinations)
@@ -30,7 +30,9 @@ class AiChatService
             $greetings = ['hi', 'hello', 'hey', 'ok', 'okay', 'hola', 'namaste'];
             
             if (in_array($lowerMessage, $greetings) || strlen($lowerMessage) <= 3) {
-                return "👋 Welcome to **Global Trade Fairs**! 
+                // For English greetings, return a hard-coded fast response
+                if ($selectedLanguage === 'English') {
+                    return "👋 Welcome to **Global Trade Fairs**! 
 
 I'm your AI assistant, here to help you discover trade fairs and events worldwide. 🌍
 
@@ -47,49 +49,54 @@ I'm your AI assistant, here to help you discover trade fairs and events worldwid
 - 'What packages do you offer?'
 
 How can I assist you today? 😊";
+                }
+                // For other languages, let AI translate the greeting (fall through)
             }
             
-            $systemPrompt = $this->getSystemPrompt();
+            $systemPrompt = $this->getSystemPrompt($selectedLanguage);
             
-            // Build messages array (OpenAI format)
+            // Build messages array (OpenAI/Groq format)
             $messages = [
                 ['role' => 'system', 'content' => $systemPrompt]
             ];
-            
-            // Add history
+
+            // Add conversation history
             foreach ($conversationHistory as $msg) {
                 $messages[] = [
-                    'role' => $msg['role'] === 'user' ? 'user' : 'assistant',
+                    'role'    => $msg['role'] === 'user' ? 'user' : 'assistant',
                     'content' => $msg['message']
                 ];
             }
-            
-            // Add current message
+
+            // Add current user message
             $messages[] = ['role' => 'user', 'content' => $userMessage];
 
             $response = $this->client->post($this->apiUrl, [
                 'headers' => [
-                    'Content-Type' => 'application/json',
+                    'Content-Type'  => 'application/json',
                     'Authorization' => 'Bearer ' . $this->apiKey,
                 ],
                 'json' => [
-                    'model' => $this->model,
-                    'messages' => $messages,
+                    'model'       => $this->model,
+                    'messages'    => $messages,
                     'temperature' => 0.1,
-                    'max_tokens' => 1024,
+                    'max_tokens'  => 1024,
                 ],
             ]);
 
             $data = json_decode($response->getBody(), true);
-            
+
             if (isset($data['choices'][0]['message']['content'])) {
                 return $data['choices'][0]['message']['content'];
             }
-            
-            return "I messed up the response parsing. Check logs.";
+
+            return "I couldn't parse the AI response. Please check the logs.";
 
         } catch (\Exception $e) {
             Log::error("Groq API Error: " . $e->getMessage());
+            if ($selectedLanguage !== 'English') {
+                return "Technical difficulties. Please try again.\n\n---\n🇬🇧 English:\nTechnical difficulties with AI service. Please check logs.";
+            }
             return "Technical difficulties with Groq AI. Please check logs.";
         }
     }
@@ -131,14 +138,38 @@ How can I assist you today? 😊";
     }
 
     /**
-     * Get system prompt for the chatbot
+     * Get system prompt for the chatbot, with language instructions injected
      */
-    private function getSystemPrompt()
+    private function getSystemPrompt($selectedLanguage = 'English')
     {
         // Fetch real event data from database
         $eventsData = $this->getEventsData();
+
+        // Build the language instruction block
+        if ($selectedLanguage === 'English') {
+            $languageBlock = "LANGUAGE: Respond in English only.";
+        } else {
+            $languageBlock = "LANGUAGE INSTRUCTIONS (MANDATORY - NEVER IGNORE):
+- The user has chosen: {$selectedLanguage}
+- You must ALWAYS respond in TWO parts, separated EXACTLY as shown below.
+- PART 1: Write your FULL answer in {$selectedLanguage}.
+- Then write EXACTLY this separator on its own line:  ---
+- Then write EXACTLY this label on the next line:  🇬🇧 English:
+- PART 2: Write your FULL answer again in English.
+- DO NOT skip either part. DO NOT merge them. DO NOT use any other separator format.
+- If the user writes in any language (including {$selectedLanguage} itself, or English, or any other language), ALWAYS understand their intent and respond in BOTH {$selectedLanguage} AND English as instructed above.
+- Example output format:
+
+    [Full answer in {$selectedLanguage} here]
+
+    ---
+    🇬🇧 English:
+    [Full answer in English here]";
+        }
         
-        return "You are a helpful AI assistant for Global Trade Fairs, a platform that helps businesses attend trade fairs worldwide.
+        return "{$languageBlock}
+
+You are a helpful AI assistant for Global Trade Fairs, a platform that helps businesses attend trade fairs worldwide.
 
 **About Global Trade Fairs:**
 - We organize and facilitate participation in trade fairs across India, Asia, and globally

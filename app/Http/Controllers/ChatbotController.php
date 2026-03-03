@@ -85,8 +85,9 @@ class ChatbotController extends Controller
     public function sendMessage(Request $request)
     {
         $request->validate([
-            'message' => 'required|string|max:1000',
-            'session_id' => 'nullable|string',
+            'message'           => 'required|string|max:1000',
+            'session_id'        => 'nullable|string',
+            'selected_language' => 'nullable|string|max:100',
         ]);
 
         try {
@@ -147,9 +148,11 @@ class ChatbotController extends Controller
                 ->toArray();
 
             // Generate AI response
+            $selectedLanguage = $request->input('selected_language', 'English');
             $aiResponse = $this->aiChatService->generateResponse(
                 $request->message,
-                array_slice($formattedHistory, 0, -1) // Exclude the current message
+                array_slice($formattedHistory, 0, -1), // Exclude the current message
+                $selectedLanguage
             );
 
             // Save AI response
@@ -160,10 +163,11 @@ class ChatbotController extends Controller
             ]);
 
             return response()->json([
-                'success' => true,
-                'message' => $aiResponse,
-                'session_id' => $sessionId,
-                'timestamp' => now()->toIso8601String(),
+                'success'           => true,
+                'message'           => $aiResponse,
+                'session_id'        => $sessionId,
+                'selected_language' => $selectedLanguage ?? 'English',
+                'timestamp'         => now()->toIso8601String(),
             ]);
 
 
