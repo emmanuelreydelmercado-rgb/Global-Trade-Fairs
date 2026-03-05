@@ -16,6 +16,11 @@
             <a href="{{ route('home') }}" class="text-gray-700 hover:text-primary transition-colors">Events</a>
             <a href="{{ route('tour.packages') }}" class="text-gray-700 hover:text-primary transition-colors">Tour Packages</a>
             <a href="{{ route('admin.dashboard') }}" class="text-primary font-semibold">Dashboard</a>
+            @auth
+            <a href="{{ route('community.index') }}" class="relative text-gray-700 hover:text-primary transition-colors flex items-center gap-1">
+                💬 Community
+            </a>
+            @endauth
         </nav>
 
         <!-- Search (Optional for admin) -->
@@ -122,6 +127,11 @@
             <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium text-primary bg-white">
                 Dashboard
             </a>
+            @auth
+            <a href="{{ route('community.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-white transition">
+                💬 Community
+            </a>
+            @endauth
         </div>
 
         <!-- Responsive Settings -->

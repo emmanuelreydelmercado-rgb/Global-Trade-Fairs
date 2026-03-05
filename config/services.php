@@ -67,4 +67,8 @@ return [
         'recipient_phone_number' => env('WHATSAPP_RECIPIENT_PHONE_NUMBER'),
     ],
 
+    'google_translate' => [
+        'key' => env('GOOGLE_TRANSLATE_API_KEY', 'YOUR_GOOGLE_TRANSLATE_API_KEY'),
+    ],
+
 ];

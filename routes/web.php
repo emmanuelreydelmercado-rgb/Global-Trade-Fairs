@@ -282,6 +282,26 @@ Route::prefix('chatbot')->group(function () {
     Route::get('/quick-actions', [ChatbotController::class, 'getQuickActions'])->name('chatbot.actions');
 });
 
+/*
+|--------------------------------------------------------------------------
+| COMMUNITY ROUTES
+|--------------------------------------------------------------------------
+*/
+use App\Http\Controllers\CommunityController;
+
+Route::middleware(['auth'])->prefix('community')->name('community.')->group(function () {
+    Route::get('/',                              [CommunityController::class, 'index'])               ->name('index');
+    Route::get('/find-friend',                   [CommunityController::class, 'findFriend'])          ->name('find');
+    Route::post('/friend-request',               [CommunityController::class, 'sendFriendRequest'])   ->name('request');
+    Route::post('/friend-request/respond',       [CommunityController::class, 'respondFriendRequest'])->name('respond');
+    Route::get('/pending-requests',              [CommunityController::class, 'pendingRequests'])     ->name('pending');
+    Route::get('/notifications',                 [CommunityController::class, 'notifications'])       ->name('notifications');
+    Route::get('/messages/{friendId}',           [CommunityController::class, 'getMessages'])         ->name('messages');
+    Route::post('/messages/send',                [CommunityController::class, 'sendMessage'])         ->name('send');
+    Route::patch('/messages/{id}/edit',          [CommunityController::class, 'editMessage'])         ->name('edit');
+    Route::delete('/messages/{id}',              [CommunityController::class, 'deleteMessage'])       ->name('delete');
+});
+
 // DEBUG: Profile picture diagnostic (remove after fixing)
 Route::get('/debug-profile', function() {
     return view('debug-profile');

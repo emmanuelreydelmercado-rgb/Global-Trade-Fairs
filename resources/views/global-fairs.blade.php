@@ -101,6 +101,63 @@
     
     {{-- Auth Section --}}
     <div class="hidden lg:flex items-center gap-4">
+
+        @auth
+        {{-- ===== CHAT ICON ===== --}}
+        <div class="relative" x-data="{ chatOpen: false }">
+            <button @click="chatOpen = !chatOpen" @click.outside="chatOpen = false"
+                    class="relative p-2 text-gray-500 hover:text-primary hover:bg-blue-50 rounded-full transition-all focus:outline-none"
+                    title="Messages" id="gfChatBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span id="gfChatBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 hidden">0</span>
+            </button>
+            <div x-show="chatOpen"
+                 x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95 translate-y-2" x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100 translate-y-0" x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                 class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden" style="display:none;">
+                <div class="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-between">
+                    <span class="text-white font-bold text-sm">💬 Messages</span>
+                    <a href="{{ route('community.index') }}" class="text-white/80 hover:text-white text-xs font-medium transition">See all →</a>
+                </div>
+                <div id="gfChatList" class="max-h-72 overflow-y-auto divide-y divide-gray-50">
+                    <div class="flex items-center justify-center py-8 text-gray-400 text-sm">Loading…</div>
+                </div>
+                <div class="p-3 border-t border-gray-100 bg-gray-50">
+                    <a href="{{ route('community.index') }}" class="block w-full text-center py-2 px-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition">
+                        Open Community 💬
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {{-- ===== NOTIFICATION ICON ===== --}}
+        <div class="relative" x-data="{ notifOpen: false }">
+            <button @click="notifOpen = !notifOpen" @click.outside="notifOpen = false"
+                    class="relative p-2 text-gray-500 hover:text-primary hover:bg-blue-50 rounded-full transition-all focus:outline-none"
+                    title="Notifications" id="gfNotifBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+                <span id="gfNotifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 hidden">0</span>
+            </button>
+            <div x-show="notifOpen"
+                 x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95 translate-y-2" x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100 translate-y-0" x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+                 class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden" style="display:none;">
+                <div class="px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-800 flex items-center justify-between">
+                    <span class="text-white font-bold text-sm">🔔 Notifications</span>
+                    <span id="gfNotifClearBtn" class="text-white/80 hover:text-white text-xs font-medium cursor-pointer transition hidden"
+                          onclick="window.location.href='{{ route('community.index') }}'">Mark all read ✓</span>
+                </div>
+                <div id="gfNotifList" class="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                    <div class="flex items-center justify-center py-8 text-gray-400 text-sm">Loading…</div>
+                </div>
+            </div>
+        </div>
+        @endauth
+
         <!-- Settings Dropdown (FOR EVERYONE) -->
         <div class="relative" x-data="{ 
             settingsOpen: false,
@@ -949,6 +1006,108 @@ am5.ready(function () {
         });
     }
 </script>
+
+@auth
+<style>
+    #gfChatList::-webkit-scrollbar, #gfNotifList::-webkit-scrollbar { width: 4px; }
+    #gfChatList::-webkit-scrollbar-thumb, #gfNotifList::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 2px; }
+    .gf-msg-item { display:flex; align-items:flex-start; gap:10px; padding:12px 14px; transition:background .15s; cursor:pointer; }
+    .gf-msg-item:hover { background:#f0f6ff; }
+    .gf-msg-avatar { width:38px; height:38px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid #e2e8f0; }
+    .gf-msg-body { flex:1; min-width:0; }
+    .gf-msg-name { font-size:13px; font-weight:700; color:#1e293b; }
+    .gf-msg-text { font-size:12px; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+    .gf-msg-meta { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+    .gf-msg-time { font-size:10px; color:#94a3b8; }
+    .gf-msg-count { background:#1a73e8; color:#fff; font-size:10px; font-weight:700; min-width:16px; height:16px; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 4px; }
+    .gf-notif-item { padding:12px 14px; border-bottom:1px solid #f1f5f9; }
+    .gf-notif-hdr { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .gf-notif-hdr img { width:36px; height:36px; border-radius:50%; object-fit:cover; border:2px solid #e2e8f0; }
+    .gf-notif-title { font-size:13px; font-weight:600; color:#1e293b; }
+    .gf-notif-sub { font-size:11px; color:#64748b; margin-top:1px; }
+    .gf-notif-msg { font-size:12px; color:#475569; background:#f8fafc; border-left:3px solid #1a73e8; padding:7px 10px; border-radius:0 8px 8px 0; margin-bottom:8px; line-height:1.5; }
+    .gf-view-btn { display:inline-flex; align-items:center; gap:5px; padding:6px 14px; background:linear-gradient(135deg,#1a73e8 0%,#0d47a1 100%); color:#fff; font-size:12px; font-weight:600; border-radius:16px; text-decoration:none; transition:opacity .2s; }
+    .gf-view-btn:hover { opacity:.88; color:#fff; }
+    .gf-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 16px; color:#94a3b8; font-size:13px; text-align:center; gap:6px; }
+</style>
+
+<script>
+(function() {
+    const DEFAULT_AVT = '{{ asset('profilepics/user_avatar.png') }}';
+    const COMM_URL    = '{{ route('community.index') }}';
+
+    function escH(s) {
+        if (!s) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    async function fetchGfNotifs() {
+        try {
+            const res  = await fetch('/community/notifications', { headers:{'X-Requested-With':'XMLHttpRequest'} });
+            const data = await res.json();
+            const total = data.total || 0;
+            const items = data.notifications || [];
+
+            // Badges
+            ['gfChatBadge','gfNotifBadge'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (total > 0) { el.textContent = total > 99 ? '99+' : total; el.classList.remove('hidden'); }
+                else el.classList.add('hidden');
+            });
+
+            // Chat dropdown
+            const chatList = document.getElementById('gfChatList');
+            if (chatList) {
+                chatList.innerHTML = items.length === 0
+                    ? '<div class="gf-empty"><div style="font-size:28px">💬</div><div>No new messages</div></div>'
+                    : items.map(n => `
+                        <div class="gf-msg-item" onclick="window.location='${COMM_URL}?friend_id=${n.friend_id}'">
+                            <img class="gf-msg-avatar" src="${escH(n.sender_avatar)}" onerror="this.src='${DEFAULT_AVT}'" alt="">
+                            <div class="gf-msg-body">
+                                <div class="gf-msg-name">${escH(n.sender_name)}</div>
+                                <div class="gf-msg-text">${escH(n.message)}</div>
+                            </div>
+                            <div class="gf-msg-meta">
+                                <span class="gf-msg-time">${escH(n.time)}</span>
+                                ${n.count > 1 ? `<span class="gf-msg-count">${n.count}</span>` : ''}
+                            </div>
+                        </div>`).join('');
+            }
+
+            // Notification dropdown
+            const notifList = document.getElementById('gfNotifList');
+            const clearBtn  = document.getElementById('gfNotifClearBtn');
+            if (notifList) {
+                if (items.length === 0) {
+                    notifList.innerHTML = '<div class="gf-empty"><div style="font-size:28px">🔔</div><div>You\'re all caught up!</div></div>';
+                    if (clearBtn) clearBtn.classList.add('hidden');
+                } else {
+                    if (clearBtn) clearBtn.classList.remove('hidden');
+                    notifList.innerHTML = items.map(n => `
+                        <div class="gf-notif-item">
+                            <div class="gf-notif-hdr">
+                                <img src="${escH(n.sender_avatar)}" onerror="this.src='${DEFAULT_AVT}'" alt="">
+                                <div>
+                                    <div class="gf-notif-title">${escH(n.sender_name)} sent you a message</div>
+                                    <div class="gf-notif-sub">🕐 ${escH(n.time)}${n.count > 1 ? ` &bull; ${n.count} new` : ''}</div>
+                                </div>
+                            </div>
+                            <div class="gf-notif-msg">"${escH(n.message)}"</div>
+                            <a href="${COMM_URL}?friend_id=${n.friend_id}" class="gf-view-btn">👁 View Chat</a>
+                        </div>`).join('');
+                }
+            }
+        } catch(e) { /* fail silently */ }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchGfNotifs();
+        setInterval(fetchGfNotifs, 10000);
+    });
+})();
+</script>
+@endauth
 
 </body>
 </html>
